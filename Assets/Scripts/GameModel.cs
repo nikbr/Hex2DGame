@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class GameModel
 {
@@ -54,13 +55,32 @@ public class GameModel
         return new Vector3Int(col, offset.y, offset.z);
     }
 
-    public List<Vector3Int> GetLocationsWithinRadiusOf(Vector3Int center, int radius){
+    public HexModel GetHexModel(int col, int row){
+        if(col>=COLS) col = col%COLS;
+        else if(col<0){
+            while(col<0) col+=COLS;
+        }
+        return terrainModel[row, col];
+    }
+
+    public void SetHexModelTile(int col, int row, Tile tile){
+        if(col>=COLS) col = col%COLS;
+        else if(col<0){
+            while(col<0) col+=COLS;
+        }
+        terrainModel[row, col].tile = tile;
+    }
+
+    public List<Vector3Int> GetLocationsWithinRangeOf(Vector3Int center, int radius){
         List<Vector3Int> locs = new List<Vector3Int>();
-        Vector3Int cubeloc = CubeCoord(new Vector3Int(center.x, center.y, 0));
-        for (int i = -radius; i<radius;i++){
-            for (int j = -radius; j<radius; j++){
-            Vector3Int offsetloc = OffsetCoord(new Vector3Int(cubeloc.x+i,cubeloc.y+j,0));
-            locs.Add(offsetloc);
+        Vector3Int cubeloc = CubeCoord(center);
+        for (int i = -radius; i<radius-1;i++){
+            for (int j = Mathf.Max(-radius+1, -i-radius); j<Mathf.Min(radius, -i+radius-1); j++){
+                Vector3Int offsetloc = OffsetCoord(new Vector3Int(cubeloc.x+i,cubeloc.y+j,0));
+                if(offsetloc.x<0)offsetloc.x = COLS+offsetloc.x;
+                else if(offsetloc.x>=COLS)offsetloc.x = offsetloc.x-COLS;
+                offsetloc.x++; // Hope this fix works
+                if(offsetloc.y<ROWS&&offsetloc.y>=0)locs.Add(offsetloc);
             }
         }
         return locs;
