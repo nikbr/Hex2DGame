@@ -9,11 +9,25 @@ public class GameActivity : MonoBehaviour
     //public UnityEditor.Tilemaps.PrefabBrush[] prefabBrushes;
     public GameModel gameModel;
     public Tilemap terrain;
+
+    public Tilemap resources;
     public HexComponent[] hexComponents;
+
+    //terrain tiles
     public Tile waterTile;
-    public Tile gravelTile;
     public Tile mountainTile;
     public Tile grassTile;
+    public Tile desertTile;
+    public Tile tundraTile;
+    public Tile snowTile;
+    public Tile grassHillTile;
+    public Tile desertHillTile;
+    public Tile tundraHillTile;
+    public Tile snowHillTile;
+
+    //resource tiles
+    public Tile grassForestTile;
+    public Tile mountainDefaultTile;
 
 
     public TerrainMap terrainMap;

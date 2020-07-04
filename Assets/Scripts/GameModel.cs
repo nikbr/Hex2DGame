@@ -64,11 +64,12 @@ public class GameModel
     }
 
     public void SetHexModelTile(int col, int row, Tile tile){
+        if(row >=ROWS||row<0) return;
         if(col>=COLS) col = col%COLS;
         else if(col<0){
             while(col<0) col+=COLS;
         }
-        terrainModel[row, col].tile = tile;
+        terrainModel[row, col].terrainTile = tile;
     }
 
     public List<Vector3Int> GetLocationsWithinRangeOf(Vector3Int center, int radius){
@@ -82,6 +83,47 @@ public class GameModel
                 offsetloc.x++; // Hope this fix works
                 if(offsetloc.y<ROWS&&offsetloc.y>=0)locs.Add(offsetloc);
             }
+        }
+        return locs;
+    }
+
+    public List<Vector3Int> GetLocationsOnRing(Vector3Int center, int radius){
+        List<Vector3Int> locs = new List<Vector3Int>();
+        Vector3Int cubeloc = CubeCoord(center);
+        Vector3Int ringloc = cubeloc;
+        ringloc.y-=(radius-1);
+        locs.Add(OffsetCoord(ringloc));
+        // Go right
+        for(int j=0;j<radius-1;j++){
+            ringloc.x++;
+            locs.Add(OffsetCoord(ringloc));
+        }
+        // Go up right
+        for(int j=0;j<radius-1;j++){
+            ringloc.y++;
+            locs.Add(OffsetCoord(ringloc));
+        }
+        //Go up left
+        for(int j=0;j<radius-1;j++){
+            ringloc.y++;
+            ringloc.x--;
+            locs.Add(OffsetCoord(ringloc));
+        }
+        // Go left
+        for(int j=0;j<radius-1;j++){
+            ringloc.x--;
+            locs.Add(OffsetCoord(ringloc));
+        }
+        // Go down left
+        for(int j=0;j<radius-1;j++){
+            ringloc.y--;
+            locs.Add(OffsetCoord(ringloc));
+        }
+        // Go down right
+        for(int j=0;j<radius-1;j++){
+            ringloc.y--;
+            ringloc.x++;
+            locs.Add(OffsetCoord(ringloc));
         }
         return locs;
     }

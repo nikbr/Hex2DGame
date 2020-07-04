@@ -9,13 +9,16 @@ public class HexModel
     public readonly int COL;
     public readonly int ROW;
 
-    public Tile tile;
+    public Tile terrainTile;
+    public Tile resourceTile;
    // public int tile;
 
     public int actualCOL;
 
 
     public HexModel(int col, int row){
+        terrainTile = null;
+        resourceTile = null;
         COL = col;
         ROW = row;
         actualCOL = col;
