@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 415900702}
   - component: {fileID: 415900701}
   m_Layer: 11
-  m_Name: Units
+  m_Name: Resources
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -190,7 +190,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1094382963
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -509,7 +509,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 1278813420}
-  hexComponents: []
+  resources: {fileID: 415900702}
   waterTile: {fileID: 11400000, guid: e203e16d57fa0f743ad8e1fa1637147f, type: 2}
   mountainTile: {fileID: 11400000, guid: 71bb52aeccd92e94780b861299b6a257, type: 2}
   grassTile: {fileID: 11400000, guid: a17cd911609343843aa2f16a9ded3ad1, type: 2}
@@ -520,6 +520,9 @@ MonoBehaviour:
   desertHillTile: {fileID: 11400000, guid: 118d4748bb91923408a7cde5ac9e8aec, type: 2}
   tundraHillTile: {fileID: 11400000, guid: afdc7a86df68c7743b720eab732a84a1, type: 2}
   snowHillTile: {fileID: 11400000, guid: 1bcb3bdf1e019e34e9e76dc43608517e, type: 2}
+  grassForestTile: {fileID: 11400000, guid: 23fca0ddc54530e48925ed46434b9d9a, type: 2}
+  mountainDefaultTile: {fileID: 11400000, guid: fe02ebfdaf9682a458d448fc4105ba4a,
+    type: 2}
   cameraInMiddle: 1
 --- !u!4 &1187389188
 Transform:
@@ -604,7 +607,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 229115583
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
