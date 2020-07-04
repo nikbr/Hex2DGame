@@ -11,8 +11,7 @@ public class GameActivity : MonoBehaviour
     public Tilemap terrain;
 
     public Tilemap resources;
-    public HexComponent[] hexComponents;
-
+    
     //terrain tiles
     public Tile waterTile;
     public Tile mountainTile;
