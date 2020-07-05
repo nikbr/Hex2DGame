@@ -83,8 +83,8 @@ public class TerrainMap : Observer
         Vector2 noiseOffset = new Vector2(Random.Range(0f,1f), Random.Range(0f,1f));
         for (int column = 0; column<context.gameModel.COLS;column++){
             for(int row = 0; row < context.gameModel.ROWS; row++){
-                float perlinVal = Mathf.PerlinNoise((float)column/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
-                 (float)row/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
+                float perlinVal = Mathf.PerlinNoise((float)(column+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
+                 (float)(row+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
                 if (perlinVal>0.5) context.gameModel.terrainModel[row, column].terrainTile = GetAltitudeTile(row, context);
                 else if (perlinVal<0.1) context.gameModel.terrainModel[row, column].terrainTile = context.waterTile;
             }
@@ -96,8 +96,8 @@ public class TerrainMap : Observer
         noiseOffset = new Vector2(Random.Range(0f,1f), Random.Range(0f,1f));
         for (int column = 0; column<context.gameModel.COLS;column++){
             for(int row = 0; row < context.gameModel.ROWS; row++){
-                float perlinVal = Mathf.PerlinNoise((float)column/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
-                 (float)row/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
+                float perlinVal = Mathf.PerlinNoise((float)(column+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
+                 (float)(row+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
                 if (perlinVal>0.5){
                     if(context.gameModel.terrainModel[row, column].terrainTile==context.grassTile){
                         context.gameModel.terrainModel[row, column].terrainTile = context.grassHillTile;
@@ -118,8 +118,8 @@ public class TerrainMap : Observer
         noiseOffset = new Vector2(Random.Range(0f,1f), Random.Range(0f,1f));
         for (int column = 0; column<context.gameModel.COLS;column++){
             for(int row = 0; row < context.gameModel.ROWS; row++){
-                float perlinVal = Mathf.PerlinNoise((float)column/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
-                 (float)row/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
+                float perlinVal = Mathf.PerlinNoise((float)(column+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
+                 (float)(row+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
                 if (perlinVal<0.1&&context.gameModel.terrainModel[row, column].terrainTile != context.waterTile){
                     context.gameModel.terrainModel[row, column].terrainTile = context.mountainTile;
                     context.gameModel.terrainModel[row, column].resourceTile = context.mountainDefaultTile;
@@ -127,18 +127,25 @@ public class TerrainMap : Observer
             }
         }
 
-        //Perlin noise forests
-        noiseRes = 0.12f;
+       //Perlin noise forests
+        noiseRes = 0.1f;
         noiseScale = 0.85f;
         noiseOffset = new Vector2(Random.Range(0f,1f), Random.Range(0f,1f));
         for (int column = 0; column<context.gameModel.COLS;column++){
             for(int row = 0; row < context.gameModel.ROWS; row++){
-                float perlinVal = Mathf.PerlinNoise((float)column/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
-                 (float)row/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
+                float perlinVal = Mathf.PerlinNoise((float)(column+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
+                 (float)(row+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
                 if (perlinVal>0.5&&(context.gameModel.terrainModel[row, column].terrainTile == context.grassTile||context.gameModel.terrainModel[row, column].terrainTile == context.grassHillTile)){
                     context.gameModel.terrainModel[row, column].resourceTile = context.grassForestTile;
+                }else if(perlinVal>0.5&&(context.gameModel.terrainModel[row, column].terrainTile == context.tundraTile||context.gameModel.terrainModel[row, column].terrainTile == context.tundraHillTile)){
+                    context.gameModel.terrainModel[row, column].resourceTile = context.tundraForestTile;
+                }else if(perlinVal>0.65&&(context.gameModel.terrainModel[row, column].terrainTile == context.desertTile||context.gameModel.terrainModel[row, column].terrainTile == context.desertHillTile)){
+                    context.gameModel.terrainModel[row, column].resourceTile = context.desertJungleTile;
+                }else if(perlinVal>0.6&&(context.gameModel.terrainModel[row, column].terrainTile == context.snowTile||context.gameModel.terrainModel[row, column].terrainTile == context.snowHillTile)){
+                    context.gameModel.terrainModel[row, column].resourceTile = context.snowForestTile;
                 }
             }
+            
         }
 
         RefreshMap(context);

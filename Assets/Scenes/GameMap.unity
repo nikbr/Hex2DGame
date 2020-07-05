@@ -288,29 +288,30 @@ Tilemap:
   - m_RefCount: 0
     m_Data:
       e00: NaN
-      e01: -5.2176092e-27
-      e02: 0
+      e01: 0
+      e02: 31284528
       e03: NaN
       e10: NaN
-      e11: 1.5e-43
-      e12: 0
+      e11: 0
+      e12: 1.37e-43
       e13: NaN
-      e20: -5.217603e-27
-      e21: 0
+      e20: -3.180338e-12
+      e21: 31284496
       e22: 0
       e23: 0
-      e30: 1.5e-43
-      e31: 0
+      e30: 5.56e-43
+      e31: 1.37e-43
       e32: 0
       e33: 0
   m_TileColorArray:
   - m_RefCount: 0
-    m_Data: {r: 1.80977e+10, g: 1.80977e+10, b: 1.80977e+10, a: 1.80977e+10}
+    m_Data: {r: 0.0000000010155645, g: 0.0000000010155645, b: 0.0000000010155645,
+      a: 0.0000000010155645}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Origin: {x: -9, y: -10, z: 0}
-  m_Size: {x: 20, y: 21, z: 1}
+  m_Origin: {x: -25, y: -10, z: 0}
+  m_Size: {x: 36, y: 55, z: 1}
   m_TileAnchor: {x: 0, y: 0, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -521,6 +522,9 @@ MonoBehaviour:
   tundraHillTile: {fileID: 11400000, guid: afdc7a86df68c7743b720eab732a84a1, type: 2}
   snowHillTile: {fileID: 11400000, guid: 1bcb3bdf1e019e34e9e76dc43608517e, type: 2}
   grassForestTile: {fileID: 11400000, guid: 23fca0ddc54530e48925ed46434b9d9a, type: 2}
+  tundraForestTile: {fileID: 11400000, guid: 4f14d0250a789b64b8a5c068a0b9eb14, type: 2}
+  desertJungleTile: {fileID: 11400000, guid: 436e7df4b04d6404a9ddd7bd386acaa9, type: 2}
+  snowForestTile: {fileID: 11400000, guid: 59acdc203435ac64982ce046d4613c0a, type: 2}
   mountainDefaultTile: {fileID: 11400000, guid: fe02ebfdaf9682a458d448fc4105ba4a,
     type: 2}
   cameraInMiddle: 1

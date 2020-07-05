@@ -11,7 +11,7 @@ public class GameActivity : MonoBehaviour
     public Tilemap terrain;
 
     public Tilemap resources;
-    
+
     //terrain tiles
     public Tile waterTile;
     public Tile mountainTile;
@@ -26,6 +26,9 @@ public class GameActivity : MonoBehaviour
 
     //resource tiles
     public Tile grassForestTile;
+    public Tile tundraForestTile;
+    public Tile desertJungleTile;
+    public Tile snowForestTile;
     public Tile mountainDefaultTile;
 
 
