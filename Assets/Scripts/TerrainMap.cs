@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+using static TerrainTile;
+using static ResourceTile;
+
 public class TerrainMap : Observer
 {
     private double northPole;
@@ -31,10 +34,9 @@ public class TerrainMap : Observer
     private void CreateWater(GameActivity context){
         for (int column = 0; column<context.gameModel.COLS;column++){
             for(int row = 0; row < context.gameModel.ROWS; row++){
-                HexModel h = new HexModel(column, row);
-                h.terrainTile = context.waterTile;
+                HexModel h = new HexModel(column, row, Water);
                 context.gameModel.terrainModel[row,column] = h;
-                context.terrain.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS), h.terrainTile );
+                context.terrain.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS), h.terrain(context));
             }
         }
     }
@@ -86,7 +88,7 @@ public class TerrainMap : Observer
                 float perlinVal = Mathf.PerlinNoise((float)(column+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
                  (float)(row+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
                 if (perlinVal>0.5) context.gameModel.terrainModel[row, column].terrainTile = GetAltitudeTile(row, context);
-                else if (perlinVal<0.1) context.gameModel.terrainModel[row, column].terrainTile = context.waterTile;
+                else if (perlinVal<0.1) context.gameModel.terrainModel[row, column].terrainTile = Water;
             }
         }
 
@@ -99,14 +101,14 @@ public class TerrainMap : Observer
                 float perlinVal = Mathf.PerlinNoise((float)(column+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
                  (float)(row+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
                 if (perlinVal>0.5){
-                    if(context.gameModel.terrainModel[row, column].terrainTile==context.grassTile){
-                        context.gameModel.terrainModel[row, column].terrainTile = context.grassHillTile;
-                    } else if(context.gameModel.terrainModel[row, column].terrainTile==context.desertTile){
-                        context.gameModel.terrainModel[row, column].terrainTile = context.desertHillTile;
-                    }else if(context.gameModel.terrainModel[row, column].terrainTile==context.tundraTile){
-                        context.gameModel.terrainModel[row, column].terrainTile = context.tundraHillTile;
-                    }else if(context.gameModel.terrainModel[row, column].terrainTile==context.snowTile){
-                        context.gameModel.terrainModel[row, column].terrainTile = context.snowHillTile;
+                    if (context.gameModel.terrainModel[row, column].terrainTile == Grass){
+                        context.gameModel.terrainModel[row, column].terrainTile = GrassHill;
+                    } else if (context.gameModel.terrainModel[row, column].terrainTile == Desert){
+                        context.gameModel.terrainModel[row, column].terrainTile = DesertHill;
+                    } else if (context.gameModel.terrainModel[row, column].terrainTile == Tundra){
+                        context.gameModel.terrainModel[row, column].terrainTile = TundraHill;
+                    } else if (context.gameModel.terrainModel[row, column].terrainTile == Snow){
+                        context.gameModel.terrainModel[row, column].terrainTile = SnowHill;
                     }  
                 }
             }
@@ -120,9 +122,9 @@ public class TerrainMap : Observer
             for(int row = 0; row < context.gameModel.ROWS; row++){
                 float perlinVal = Mathf.PerlinNoise((float)(column+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
                  (float)(row+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
-                if (perlinVal<0.1&&context.gameModel.terrainModel[row, column].terrainTile != context.waterTile){
-                    context.gameModel.terrainModel[row, column].terrainTile = context.mountainTile;
-                    context.gameModel.terrainModel[row, column].resourceTile = context.mountainDefaultTile;
+                if (perlinVal<0.1&&context.gameModel.terrainModel[row, column].terrainTile != Water){
+                    context.gameModel.terrainModel[row, column].terrainTile = Mountain;
+                    context.gameModel.terrainModel[row, column].resourceTile = MountainDefault;
                 }
             }
         }
@@ -135,14 +137,17 @@ public class TerrainMap : Observer
             for(int row = 0; row < context.gameModel.ROWS; row++){
                 float perlinVal = Mathf.PerlinNoise((float)(column+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.x,
                  (float)(row+1)/Mathf.Max(context.gameModel.COLS, context.gameModel.ROWS)/noiseRes + noiseOffset.y)*noiseScale;
-                if (perlinVal>0.5&&(context.gameModel.terrainModel[row, column].terrainTile == context.grassTile||context.gameModel.terrainModel[row, column].terrainTile == context.grassHillTile)){
-                    context.gameModel.terrainModel[row, column].resourceTile = context.grassForestTile;
-                }else if(perlinVal>0.5&&(context.gameModel.terrainModel[row, column].terrainTile == context.tundraTile||context.gameModel.terrainModel[row, column].terrainTile == context.tundraHillTile)){
-                    context.gameModel.terrainModel[row, column].resourceTile = context.tundraForestTile;
-                }else if(perlinVal>0.65&&(context.gameModel.terrainModel[row, column].terrainTile == context.desertTile||context.gameModel.terrainModel[row, column].terrainTile == context.desertHillTile)){
-                    context.gameModel.terrainModel[row, column].resourceTile = context.desertJungleTile;
-                }else if(perlinVal>0.6&&(context.gameModel.terrainModel[row, column].terrainTile == context.snowTile||context.gameModel.terrainModel[row, column].terrainTile == context.snowHillTile)){
-                    context.gameModel.terrainModel[row, column].resourceTile = context.snowForestTile;
+
+                HexModel curTile = context.gameModel.terrainModel[row, column];
+                //if (perlinVal > 0.5 && curTile.terrainTile = context.terrainTile[Grass])
+                if (perlinVal>0.5&&(curTile.terrainTile == Grass ||curTile.terrainTile == GrassHill)){
+                    curTile.resourceTile = GrassForest;
+                }else if(perlinVal>0.5&&(curTile.terrainTile == Tundra ||curTile.terrainTile == TundraHill)){
+                    curTile.resourceTile = TundraForest;
+                }else if(perlinVal>0.65&&(curTile.terrainTile == Desert ||curTile.terrainTile == DesertHill)){
+                    curTile.resourceTile = DesertJungle;
+                }else if(perlinVal>0.6&&(curTile.terrainTile == Snow ||curTile.terrainTile == SnowHill)){
+                    curTile.resourceTile = SnowForest;
                 }
             }
             
@@ -151,14 +156,14 @@ public class TerrainMap : Observer
         RefreshMap(context);
     }
 
-    private void LandMass(Vector3Int center, int radius, GameActivity context, Tile tile){
+    private void LandMass(Vector3Int center, int radius, GameActivity context, int tile){
         List<Vector3Int> locs = context.gameModel.GetLocationsWithinRangeOf(center, radius);
         foreach(Vector3Int loc in locs){
             context.gameModel.SetHexModelTile(loc.x, loc.y, tile);
         }
     }
 
-    private void RandomSpawns(List<Vector3Int> locs, GameActivity context, int count, Tile tile){
+    private void RandomSpawns(List<Vector3Int> locs, GameActivity context, int count, int tile){
         foreach (Vector3Int loc in locs){
             Vector3Int cubeloc = context.gameModel.CubeCoord(loc);
             for (int i =0;i<3;i++){
@@ -198,8 +203,8 @@ public class TerrainMap : Observer
         for(int q = 0;q<context.gameModel.COLS;q++){
             for(int r = 0;r<context.gameModel.ROWS;r++){
                 HexModel h = context.gameModel.terrainModel[r,q];
-                context.terrain.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS),h.terrainTile );
-                context.resources.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS),h.resourceTile);
+                context.terrain.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS), h.terrain(context));
+                context.resources.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS), h.resource(context));
             }
         }
     }
@@ -223,40 +228,40 @@ public class TerrainMap : Observer
             }
 
             context.terrain.SetTile(oldLeftPos, null);
-            context.terrain.SetTile(newLeftPos, hLeft.terrainTile);
+            context.terrain.SetTile(newLeftPos, hLeft.terrain(context));
             context.terrain.SetTile(oldRightPos, null);
-            context.terrain.SetTile(newRightPos, hRight.terrainTile);
+            context.terrain.SetTile(newRightPos, hRight.terrain(context));
 
             context.resources.SetTile(oldLeftPos, null);
-            context.resources.SetTile(newLeftPos, hLeft.resourceTile);
+            context.resources.SetTile(newLeftPos, hLeft.resource(context));
             context.resources.SetTile(oldRightPos, null);
-            context.resources.SetTile(newRightPos, hRight.resourceTile);
+            context.resources.SetTile(newRightPos, hRight.resource(context));
         }
 
     }
 
-    private Tile GetAltitudeTile(int y, GameActivity context){
+    private int GetAltitudeTile(int y, GameActivity context){
         //Debug.Log(y);
         if(y>=0&&y<southPole){
-            return context.snowTile;
+            return Snow;
         }else if(y>=southPole&&y<southTundra){
-            return context.tundraTile;
+            return Tundra;
         }else if(y>=southTundra&&y<southGreen){
-            return context.grassTile;
+            return Grass;
         }else if(y>=southGreen&&y<southDesert){
-            return context.desertTile;
+            return Desert;
         }else if(y>=southDesert&&y<=northDesert){
-            return context.grassTile;
+            return Grass;
         }else if(y>northDesert&&y<=northGreen){
-            return context.desertTile;
+            return Desert;
         }else if(y>northGreen&&y<=northTundra){
-            return context.grassTile;
+            return Grass;
         }else if(y>northTundra&&y<=northPole){
-            return context.tundraTile;
+            return Tundra;
         }else if(y>northPole&&y<context.gameModel.ROWS){
-            return context.snowTile;
+            return Snow;
         }else{
-            return context.grassTile;
+            return Grass;
         }
     }
 

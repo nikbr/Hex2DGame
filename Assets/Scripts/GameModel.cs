@@ -63,7 +63,7 @@ public class GameModel
         return terrainModel[row, col];
     }
 
-    public void SetHexModelTile(int col, int row, Tile tile){
+    public void SetHexModelTile(int col, int row, int tile){
         if(row >=ROWS||row<0) return;
         if(col>=COLS) col = col%COLS;
         else if(col<0){
