@@ -3,6 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+public static class TerrainTile {
+    public const int Water = 0;
+    public const int Mountain = 1;
+    public const int Grass = 2;
+    public const int Desert = 3;
+    public const int Tundra = 4;
+    public const int Snow = 5;
+    public const int GrassHill = 6;
+    public const int DesertHill = 7;
+    public const int TundraHill = 8;
+    public const int SnowHill = 9;
+    public const int LENGTH = 10;
+}
+
+public static class ResourceTile {
+    public const int GrassForest = 0;
+    public const int TundraForest = 1;
+    public const int DesertJungle = 2;
+    public const int SnowForest = 3;
+    public const int MountainDefault = 4;
+    public const int LENGTH = 5;
+}
+
 public class GameActivity : MonoBehaviour
 {
 
@@ -11,26 +34,8 @@ public class GameActivity : MonoBehaviour
     public Tilemap terrain;
 
     public Tilemap resources;
-
-    //terrain tiles
-    public Tile waterTile;
-    public Tile mountainTile;
-    public Tile grassTile;
-    public Tile desertTile;
-    public Tile tundraTile;
-    public Tile snowTile;
-    public Tile grassHillTile;
-    public Tile desertHillTile;
-    public Tile tundraHillTile;
-    public Tile snowHillTile;
-
-    //resource tiles
-    public Tile grassForestTile;
-    public Tile tundraForestTile;
-    public Tile desertJungleTile;
-    public Tile snowForestTile;
-    public Tile mountainDefaultTile;
-
+    public Tile[] terrainTile;
+    public Tile[] resourceTile;
 
     public TerrainMap terrainMap;
 

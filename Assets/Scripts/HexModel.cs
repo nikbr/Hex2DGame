@@ -9,19 +9,32 @@ public class HexModel
     public readonly int COL;
     public readonly int ROW;
 
-    public Tile terrainTile;
-    public Tile resourceTile;
-   // public int tile;
+    public int? terrainTile = null;
+    public int? resourceTile = null;
 
     public int actualCOL;
 
 
     public HexModel(int col, int row){
-        terrainTile = null;
+        COL = col;
+        ROW = row;
+        actualCOL = col;
+    }
+
+    public HexModel(int col, int row, int tile){
+        terrainTile = tile;
         resourceTile = null;
         COL = col;
         ROW = row;
         actualCOL = col;
+    }
+
+    public Tile terrain(GameActivity context) {
+        return (this.terrainTile != null) ? context.terrainTile[(int)terrainTile] : null;
+    }
+
+    public Tile resource(GameActivity context) {
+        return (this.resourceTile != null) ? context.resourceTile[(int)resourceTile] : null;
     }
 
     public Vector3Int Position(){

@@ -3,7 +3,24 @@ guid: 68f3b10dee4e84b47a70ccd11316d8fe
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - terrain: {instanceID: 0}
+  - resources: {instanceID: 0}
+  - waterTile: {fileID: 11400000, guid: e203e16d57fa0f743ad8e1fa1637147f, type: 2}
+  - mountainTile: {instanceID: 0}
+  - grassTile: {instanceID: 0}
+  - desertTile: {instanceID: 0}
+  - tundraTile: {instanceID: 0}
+  - snowTile: {instanceID: 0}
+  - grassHillTile: {instanceID: 0}
+  - desertHillTile: {instanceID: 0}
+  - tundraHillTile: {instanceID: 0}
+  - snowHillTile: {instanceID: 0}
+  - grassForestTile: {instanceID: 0}
+  - tundraForestTile: {instanceID: 0}
+  - desertJungleTile: {instanceID: 0}
+  - snowForestTile: {instanceID: 0}
+  - mountainDefaultTile: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
