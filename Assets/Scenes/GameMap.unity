@@ -511,22 +511,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrain: {fileID: 1278813420}
   resources: {fileID: 415900702}
-  waterTile: {fileID: 11400000, guid: e203e16d57fa0f743ad8e1fa1637147f, type: 2}
-  mountainTile: {fileID: 11400000, guid: 71bb52aeccd92e94780b861299b6a257, type: 2}
-  grassTile: {fileID: 11400000, guid: a17cd911609343843aa2f16a9ded3ad1, type: 2}
-  desertTile: {fileID: 11400000, guid: 0afacce94bae40541849e221b4e394b1, type: 2}
-  tundraTile: {fileID: 11400000, guid: fde5bf618a99542449af54ab2407b0a7, type: 2}
-  snowTile: {fileID: 11400000, guid: 8ba6ac0aaa0188a4599e7e7e0bffaaff, type: 2}
-  grassHillTile: {fileID: 11400000, guid: bf1c2c1a2b94e40469f015a427daa098, type: 2}
-  desertHillTile: {fileID: 11400000, guid: 118d4748bb91923408a7cde5ac9e8aec, type: 2}
-  tundraHillTile: {fileID: 11400000, guid: afdc7a86df68c7743b720eab732a84a1, type: 2}
-  snowHillTile: {fileID: 11400000, guid: 1bcb3bdf1e019e34e9e76dc43608517e, type: 2}
-  grassForestTile: {fileID: 11400000, guid: 23fca0ddc54530e48925ed46434b9d9a, type: 2}
-  tundraForestTile: {fileID: 11400000, guid: 4f14d0250a789b64b8a5c068a0b9eb14, type: 2}
-  desertJungleTile: {fileID: 11400000, guid: 436e7df4b04d6404a9ddd7bd386acaa9, type: 2}
-  snowForestTile: {fileID: 11400000, guid: 59acdc203435ac64982ce046d4613c0a, type: 2}
-  mountainDefaultTile: {fileID: 11400000, guid: fe02ebfdaf9682a458d448fc4105ba4a,
-    type: 2}
+  terrainTile:
+  - {fileID: 11400000, guid: e203e16d57fa0f743ad8e1fa1637147f, type: 2}
+  - {fileID: 11400000, guid: 71bb52aeccd92e94780b861299b6a257, type: 2}
+  - {fileID: 11400000, guid: a17cd911609343843aa2f16a9ded3ad1, type: 2}
+  - {fileID: 11400000, guid: 0afacce94bae40541849e221b4e394b1, type: 2}
+  - {fileID: 11400000, guid: fde5bf618a99542449af54ab2407b0a7, type: 2}
+  - {fileID: 11400000, guid: 8ba6ac0aaa0188a4599e7e7e0bffaaff, type: 2}
+  - {fileID: 11400000, guid: bf1c2c1a2b94e40469f015a427daa098, type: 2}
+  - {fileID: 11400000, guid: 118d4748bb91923408a7cde5ac9e8aec, type: 2}
+  - {fileID: 11400000, guid: afdc7a86df68c7743b720eab732a84a1, type: 2}
+  - {fileID: 11400000, guid: 1bcb3bdf1e019e34e9e76dc43608517e, type: 2}
+  resourceTile:
+  - {fileID: 11400000, guid: 23fca0ddc54530e48925ed46434b9d9a, type: 2}
+  - {fileID: 11400000, guid: 4f14d0250a789b64b8a5c068a0b9eb14, type: 2}
+  - {fileID: 11400000, guid: 436e7df4b04d6404a9ddd7bd386acaa9, type: 2}
+  - {fileID: 11400000, guid: 59acdc203435ac64982ce046d4613c0a, type: 2}
+  - {fileID: 11400000, guid: fe02ebfdaf9682a458d448fc4105ba4a, type: 2}
   cameraInMiddle: 1
 --- !u!4 &1187389188
 Transform:
