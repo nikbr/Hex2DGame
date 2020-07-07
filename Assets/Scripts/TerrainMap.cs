@@ -28,7 +28,8 @@ public class TerrainMap : Observer
 
         CreateWater(context);
         CreateContinents (context);
-        //context.terrain.SetTile(new Vector3Int(50,50,0), context.gravelTile);
+        CreateCities(context);
+        RefreshMap(context);
     }
 
     private void CreateWater(GameActivity context){
@@ -152,8 +153,10 @@ public class TerrainMap : Observer
             }
             
         }
+    }
 
-        RefreshMap(context);
+    private void CreateCities(GameActivity context){
+
     }
 
     private void LandMass(Vector3Int center, int radius, GameActivity context, int tile){

@@ -26,16 +26,22 @@ public static class ResourceTile {
     public const int LENGTH = 5;
 }
 
+public static class ImprovementTile {
+    public const int City = 0;
+    public const int LENGTH = 1;
+}
+
 public class GameActivity : MonoBehaviour
 {
 
     //public UnityEditor.Tilemaps.PrefabBrush[] prefabBrushes;
     public GameModel gameModel;
     public Tilemap terrain;
-
     public Tilemap resources;
+    public Tilemap improvements;
     public Tile[] terrainTile;
     public Tile[] resourceTile;
+    public Tile[] improvementTile;
 
     public TerrainMap terrainMap;
 

@@ -11,6 +11,7 @@ public class HexModel
 
     public int? terrainTile = null;
     public int? resourceTile = null;
+    public int? improvementTile = null;
 
     public int actualCOL;
 
@@ -36,6 +37,10 @@ public class HexModel
     public Tile resource(GameActivity context) {
         return (this.resourceTile != null) ? context.resourceTile[(int)resourceTile] : null;
     }
+
+    public Tile improvement(GameActivity context){
+        return (this.improvementTile != null) ? context.improvementTile[(int) improvementTile] : null;
+    } 
 
     public Vector3Int Position(){
         return new Vector3Int(actualCOL, ROW, 0);
