@@ -28,6 +28,7 @@ public class TerrainMap : Observer
 
         CreateWater(context);
         CreateContinents (context);
+        CreateRivers(context);
         CreateCities(context);
         RefreshMap(context);
     }
@@ -155,6 +156,10 @@ public class TerrainMap : Observer
         }
     }
 
+
+    private void CreateRivers(GameActivity context){
+        
+    }
     private void CreateCities(GameActivity context){
 
     }

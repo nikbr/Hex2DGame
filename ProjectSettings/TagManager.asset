@@ -44,6 +44,9 @@ TagManager:
   - name: Terrain
     uniqueID: 229115583
     locked: 0
+  - name: Rivers
+    uniqueID: 1041388549
+    locked: 0
   - name: Resources
     uniqueID: 3200584333
     locked: 0
