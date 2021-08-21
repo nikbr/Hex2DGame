@@ -16,6 +16,8 @@ public class TerrainMap : Observer
     private double southGreen;
     private double southTundra;
     private double southPole;
+
+    private int currentChunkNumber;
     public TerrainMap(GameActivity context){
         southPole = 0.05*context.gameModel.ROWS;
         southTundra = 0.1 * context.gameModel.ROWS;
@@ -26,8 +28,12 @@ public class TerrainMap : Observer
         northGreen = context.gameModel.ROWS-southGreen;
         northDesert = context.gameModel.ROWS - southDesert;
 
+        currentChunkNumber=0;
+
         CreateWater(context);
         CreateContinents (context);
+        RefreshMap(context);
+        ChunkifyByTerrain(context);
         CreateRivers(context);
         CreateCities(context);
         RefreshMap(context);
@@ -48,7 +54,11 @@ public class TerrainMap : Observer
         //Test
        // LandMass(new Vector3Int(50, 50, 0), 1, context);//
        // LandMass(new Vector3Int(70,50, 0), 1, context);
-       // RandomSpawns(context.gameModel.GetLocationsOnRing(new Vector3Int(50,50,0), 6), context,0);
+        //RandomSpawns(context.gameModel.GetLocationsOnRing(new Vector3Int(50,50,0), 6), context,0);
+       // List<Vector3Int> ringLocs = context.gameModel.GetLocationsOnRing(new Vector3Int(50,50,0), 6);
+       // foreach(Vector3Int loc in ringLocs){
+        //    context.gameModel.SetHexModelTile(loc.x, loc.y, 1);
+        //}
         //LandMass(new Vector3Int(49, 50, 0), 1, context);//
        // LandMass(new Vector3Int(51, 50, 0), 1, context);//
         //LandMass(new Vector3Int(49, 49, 0), 1, context);//
@@ -152,10 +162,47 @@ public class TerrainMap : Observer
                     curTile.resourceTile = SnowForest;
                 }
             }
-            
+        }
+        
+    }
+
+    private void ChunkifyByTerrain(GameActivity context){
+        for (int column = 0; column<context.gameModel.COLS;column++){
+            for(int row = 0; row < context.gameModel.ROWS; row++){
+                AssignChunkNumber(row, column, context);
+            }
         }
     }
 
+    private void AssignChunkNumber(int row, int column, GameActivity context){
+        HexModel hex = context.gameModel.GetHexModel(column, row);
+        Queue<HexModel> processQueue = new Queue<HexModel>();
+        processQueue.Enqueue(hex);
+        int chunkNumOverride = -1;
+        while(processQueue.Count>0){
+            hex = processQueue.Dequeue();
+            if(hex.terrainChunk==null){
+                List<Vector3Int> neighbors = context.gameModel.GetLocationsOnRing(new Vector3Int(hex.COL, hex.ROW, 0), 2);
+
+                if(chunkNumOverride>=0){
+                    context.gameModel.SetHexModelTerrainChunk(hex.COL, hex.ROW, chunkNumOverride);
+                    context.gameModel.terrainChunks[chunkNumOverride].Insert(context.gameModel.GetHexModel(hex.COL, hex.ROW));
+                }else{
+                    context.gameModel.SetHexModelTerrainChunk(hex.COL, hex.ROW, currentChunkNumber);
+                    context.gameModel.terrainChunks.Add(currentChunkNumber, new TerrainChunk(currentChunkNumber, (int)context.gameModel.GetHexModel(column, row).terrainTile));
+                    context.gameModel.terrainChunks[currentChunkNumber].Insert(context.gameModel.GetHexModel(hex.COL, hex.ROW));
+                    chunkNumOverride=currentChunkNumber;
+                    currentChunkNumber++;
+                }
+                foreach(Vector3Int neighbor in neighbors){
+                    HexModel neighborHex = context.gameModel.GetHexModel(neighbor.x, neighbor.y);
+                    if(neighborHex!=null&&hex.terrainTile==neighborHex.terrainTile){
+                        processQueue.Enqueue(neighborHex);
+                    }
+                }
+            }
+        }
+    }
 
     private void CreateRivers(GameActivity context){
         

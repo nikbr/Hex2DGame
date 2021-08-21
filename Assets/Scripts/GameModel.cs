@@ -12,10 +12,13 @@ public class GameModel
     public readonly int COLS;
     public readonly int ROWS;
 
+    public Dictionary<int, TerrainChunk> terrainChunks;
+
     public GameModel(GameActivity game, int cols, int rows){
         COLS = cols;
         ROWS = rows;
         terrainModel= new HexModel[rows, cols];
+        terrainChunks = new Dictionary<int, TerrainChunk>();
     }
     public int TotalHexes(){
         return COLS*ROWS;
@@ -56,6 +59,7 @@ public class GameModel
     }
 
     public HexModel GetHexModel(int col, int row){
+        if(row >=ROWS||row<0) return null;
         if(col>=COLS) col = col%COLS;
         else if(col<0){
             while(col<0) col+=COLS;
@@ -70,6 +74,15 @@ public class GameModel
             while(col<0) col+=COLS;
         }
         terrainModel[row, col].terrainTile = tile;
+    }
+
+    public void SetHexModelTerrainChunk(int col, int row, int chunk_id){
+        if(row >=ROWS||row<0) return;
+        if(col>=COLS) col = col%COLS;
+        else if(col<0){
+            while(col<0) col+=COLS;
+        }
+        terrainModel[row, col].terrainChunk = chunk_id;
     }
 
     public List<Vector3Int> GetLocationsWithinRangeOf(Vector3Int center, int radius){
@@ -120,7 +133,7 @@ public class GameModel
             locs.Add(OffsetCoord(ringloc));
         }
         // Go down right
-        for(int j=0;j<radius-1;j++){
+        for(int j=0;j<radius-2;j++){ //-2 here so that the first one doesnt get looked at twice
             ringloc.y--;
             ringloc.x++;
             locs.Add(OffsetCoord(ringloc));

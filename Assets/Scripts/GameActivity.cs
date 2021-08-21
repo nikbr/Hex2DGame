@@ -66,6 +66,17 @@ public class GameActivity : MonoBehaviour
     {
         CheckIfCameraInMiddle();
         CheckIfCameraMoved();
+
+        if(Input.GetMouseButtonDown(0)){
+            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int gridPosition = terrain.WorldToCell(mousePosition);
+
+            HexModel hex = gameModel.GetHexModel(gridPosition.x, gridPosition.y);
+            Debug.Log("Grid position: "+ gridPosition.x + " " + gridPosition.y + " " + gridPosition.z + "\n"+
+            "Hex info: " + hex.COL + " " + hex.ROW + " Terrain Tile: " + hex.terrainTile + " Resource Tile: " + hex.resourceTile+ "\n"+
+            "Hex chunk: " + hex.terrainChunk+ "\n"+
+            "Chunk info: "+ "Terrain: " + gameModel.terrainChunks[(int)hex.terrainChunk].TERRAIN_TYPE + " ID: " + gameModel.terrainChunks[(int)hex.terrainChunk].CHUNK_ID + " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size());
+        }
     }
 
     void CheckIfCameraMoved(){

@@ -13,6 +13,11 @@ public class HexModel
     public int? resourceTile = null;
     public int? improvementTile = null;
 
+    public int? terrainChunk = null;
+
+    public int cityScore = 0;
+    public int movementPoints = 0;
+
     public int actualCOL;
 
 
