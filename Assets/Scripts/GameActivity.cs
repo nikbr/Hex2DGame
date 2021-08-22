@@ -31,6 +31,31 @@ public static class ImprovementTile {
     public const int LENGTH = 1;
 }
 
+public static class TerrainBodyType { 
+    public const int Ocean = 0;
+    public const int Sea = 1;
+    public const int Lake = 2;
+    public const int Land = 3;
+    public const int MountainRange = 4;
+    public const int LENGTH = 5;
+}
+
+public static class RiverSide { 
+    public const int None = 0;
+    public const int Left = 1;
+    public const int Right = 2;
+}
+
+public static class Direction { //depends on the order of directions looked at in GetLocationsOnRing
+    public const int BottomLeft = 0;
+    public const int BottomRight = 1;
+    public const int Right = 2;
+    public const int TopRight = 3;
+    public const int TopLeft = 4;
+    public const int Left = 5;
+    public const int LENGTH = 6;
+}
+
 public class GameActivity : MonoBehaviour
 {
 
@@ -73,9 +98,10 @@ public class GameActivity : MonoBehaviour
 
             HexModel hex = gameModel.GetHexModel(gridPosition.x, gridPosition.y);
             Debug.Log("Grid position: "+ gridPosition.x + " " + gridPosition.y + " " + gridPosition.z + "\n"+
-            "Hex info: " + hex.COL + " " + hex.ROW + " Terrain Tile: " + hex.terrainTile + " Resource Tile: " + hex.resourceTile+ "\n"+
+            "Hex info: " + hex.COL + " " + hex.ROW + " Terrain Body Type: " + hex.terrainBodyType + " Coastal: " + hex.coastal+ "\n"+
             "Hex chunk: " + hex.terrainChunk+ "\n"+
-            "Chunk info: "+ "Terrain: " + gameModel.terrainChunks[(int)hex.terrainChunk].TERRAIN_TYPE + " ID: " + gameModel.terrainChunks[(int)hex.terrainChunk].CHUNK_ID + " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size());
+            "Chunk info: "+ "Terrain: " + gameModel.terrainChunks[(int)hex.terrainChunk].TERRAIN_TYPE + " ID: " + gameModel.terrainChunks[(int)hex.terrainChunk].CHUNK_ID + 
+            " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size() + " MaxRiverStarts: " + gameModel.terrainChunks[(int)hex.terrainChunk].maxRiverStarts +"\n");
         }
     }
 

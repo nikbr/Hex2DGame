@@ -5,6 +5,7 @@ using UnityEngine.Tilemaps;
 
 using static TerrainTile;
 using static ResourceTile;
+using static TerrainBodyType;
 
 public class TerrainMap : Observer
 {
@@ -32,8 +33,9 @@ public class TerrainMap : Observer
 
         CreateWater(context);
         CreateContinents (context);
-        RefreshMap(context);
         ChunkifyByTerrain(context);
+        MarkBodiesOfWater(context);
+        context.gameModel.UpdateMaxRiverStarts();
         CreateRivers(context);
         CreateCities(context);
         RefreshMap(context);
@@ -182,7 +184,7 @@ public class TerrainMap : Observer
         while(processQueue.Count>0){
             hex = processQueue.Dequeue();
             if(hex.terrainChunk==null){
-                List<Vector3Int> neighbors = context.gameModel.GetLocationsOnRing(new Vector3Int(hex.COL, hex.ROW, 0), 2);
+                Vector3Int[] neighbors = context.gameModel.GetNeighbors(new Vector3Int(hex.COL, hex.ROW, 0));
 
                 if(chunkNumOverride>=0){
                     context.gameModel.SetHexModelTerrainChunk(hex.COL, hex.ROW, chunkNumOverride);
@@ -199,6 +201,35 @@ public class TerrainMap : Observer
                     if(neighborHex!=null&&hex.terrainTile==neighborHex.terrainTile){
                         processQueue.Enqueue(neighborHex);
                     }
+                }
+            }
+        }
+    }
+
+    private void MarkBodiesOfWater(GameActivity context){
+        for (int column = 0; column<context.gameModel.COLS;column++){
+            for(int row = 0; row < context.gameModel.ROWS; row++){
+                HexModel hex = context.gameModel.GetHexModel(column, row);
+                Vector3Int[] neighborLocs = context.gameModel.GetNeighbors(new Vector3Int(column, row, 0));
+                if(!hex.IsWater()){
+                    context.gameModel.GetHexModel(column, row).terrainBodyType=Land;
+                    if(context.gameModel.GetHexModel(column, row).terrainTile==Mountain){
+                        context.gameModel.GetHexModel(column, row).terrainBodyType=MountainRange;
+                    }
+                    foreach(Vector3Int neighborLoc in neighborLocs){
+                        HexModel neighbor = context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y);
+                        if(neighbor!=null&&neighbor.IsWater()) hex.coastal = true;
+                    };
+                }else{
+                    if(context.gameModel.terrainChunks[(int)hex.terrainChunk].Size()<40){
+                        context.gameModel.GetHexModel(column, row).terrainBodyType=Lake;
+                    }else if(context.gameModel.terrainChunks[(int)hex.terrainChunk].Size()>=40&&context.gameModel.terrainChunks[(int)hex.terrainChunk].Size()<500){
+                        context.gameModel.GetHexModel(column, row).terrainBodyType=Sea;
+                    }
+                    foreach(Vector3Int neighborLoc in neighborLocs){
+                        HexModel neighbor = context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y);
+                        if(neighbor!=null&&!neighbor.IsWater()) hex.coastal = true;
+                    };
                 }
             }
         }

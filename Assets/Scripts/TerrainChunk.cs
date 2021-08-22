@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using static TerrainBodyType;
 public class TerrainChunk
 {
     public readonly int CHUNK_ID;
     public readonly int TERRAIN_TYPE;
     private List<Vector3Int> hexesInChunk;
+    public int maxRiverStarts = 0;
     public TerrainChunk(int id, int terrain){
         CHUNK_ID = id;
         TERRAIN_TYPE = terrain;
@@ -20,7 +21,9 @@ public class TerrainChunk
             Debug.Log("Could insert into chunk. Check terrain type and chunk ID.");
         }
     }
-
+    public List<Vector3Int> GetHexesLocations(){
+        return hexesInChunk;
+    }
     public int Size(){
         return hexesInChunk.Count;
     }

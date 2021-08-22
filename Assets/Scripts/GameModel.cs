@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static TerrainBodyType;
 
 public class GameModel
 {
@@ -100,6 +101,47 @@ public class GameModel
         return locs;
     }
 
+    public Vector3Int[] GetNeighbors(Vector3Int center){
+        return GetLocationsOnRing(center, 2).ToArray();
+    }
+    public Vector3Int GetNeighbor(Vector3Int center, int direction){
+        return GetNeighbors(center)[direction];
+    }
+    public Vector3Int GetBottomLeftNeighbor(Vector3Int center){
+        return GetNeighbors(center)[Direction.BottomLeft];
+    }
+    public Vector3Int GetBottomRightNeighbor(Vector3Int center){
+        return GetNeighbors(center)[Direction.BottomRight];
+    }
+    public Vector3Int GetRightNeighbor(Vector3Int center){
+        return GetNeighbors(center)[Direction.Right];
+    }
+    public Vector3Int GetTopRightNeighbor(Vector3Int center){
+        return GetNeighbors(center)[Direction.TopRight];
+    }
+    public Vector3Int GetTopLeftNeighbor(Vector3Int center){
+        return GetNeighbors(center)[Direction.TopLeft];
+    }
+    public Vector3Int GetLeftNeighbor(Vector3Int center){
+        return GetNeighbors(center)[Direction.Left];
+    }
+    public void UpdateMaxRiverStarts(){
+        foreach(KeyValuePair<int, TerrainChunk> keyValuePair in terrainChunks){
+            TerrainChunk chunk = keyValuePair.Value;
+            int terrainBodyType = this.GetHexModel(chunk.GetHexesLocations()[0].x, chunk.GetHexesLocations()[0].y).terrainBodyType;
+            if(terrainBodyType==Land){
+                keyValuePair.Value.maxRiverStarts=0;
+            }
+            else if(terrainBodyType==Ocean){
+                keyValuePair.Value.maxRiverStarts = chunk.Size()/40;
+            }
+            else if(chunk.Size()<5) {
+                keyValuePair.Value.maxRiverStarts = 1;
+            }else if(chunk.Size()>=5){
+                keyValuePair.Value.maxRiverStarts = chunk.Size()/4+1;
+            }
+        }
+    }
     public List<Vector3Int> GetLocationsOnRing(Vector3Int center, int radius){
         List<Vector3Int> locs = new List<Vector3Int>();
         Vector3Int cubeloc = CubeCoord(center);

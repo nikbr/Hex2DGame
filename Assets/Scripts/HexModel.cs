@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-
+using static TerrainBodyType;
+using static TerrainTile;
 
 public class HexModel
 {
@@ -17,6 +18,9 @@ public class HexModel
 
     public int cityScore = 0;
     public int movementPoints = 0;
+
+    public bool coastal = false;
+    public int terrainBodyType = Ocean;
 
     public int actualCOL;
 
@@ -45,7 +49,11 @@ public class HexModel
 
     public Tile improvement(GameActivity context){
         return (this.improvementTile != null) ? context.improvementTile[(int) improvementTile] : null;
-    } 
+    }
+
+    public bool IsWater(){
+        return terrainTile==Water;
+    }
 
     public Vector3Int Position(){
         return new Vector3Int(actualCOL, ROW, 0);
