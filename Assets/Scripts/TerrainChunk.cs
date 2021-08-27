@@ -7,7 +7,6 @@ public class TerrainChunk
     public readonly int CHUNK_ID;
     public readonly int TERRAIN_TYPE;
     private List<Vector3Int> hexesInChunk;
-    public int maxRiverStarts = 0;
     public TerrainChunk(int id, int terrain){
         CHUNK_ID = id;
         TERRAIN_TYPE = terrain;

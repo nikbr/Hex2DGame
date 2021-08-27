@@ -125,23 +125,6 @@ public class GameModel
     public Vector3Int GetLeftNeighbor(Vector3Int center){
         return GetNeighbors(center)[Direction.Left];
     }
-    public void UpdateMaxRiverStarts(){
-        foreach(KeyValuePair<int, TerrainChunk> keyValuePair in terrainChunks){
-            TerrainChunk chunk = keyValuePair.Value;
-            int terrainBodyType = this.GetHexModel(chunk.GetHexesLocations()[0].x, chunk.GetHexesLocations()[0].y).terrainBodyType;
-            if(terrainBodyType==Land){
-                keyValuePair.Value.maxRiverStarts=0;
-            }
-            else if(terrainBodyType==Ocean){
-                keyValuePair.Value.maxRiverStarts = chunk.Size()/40;
-            }
-            else if(chunk.Size()<5) {
-                keyValuePair.Value.maxRiverStarts = 1;
-            }else if(chunk.Size()>=5){
-                keyValuePair.Value.maxRiverStarts = chunk.Size()/4+1;
-            }
-        }
-    }
     public List<Vector3Int> GetLocationsOnRing(Vector3Int center, int radius){
         List<Vector3Int> locs = new List<Vector3Int>();
         Vector3Int cubeloc = CubeCoord(center);

@@ -15,6 +15,14 @@ public static class TerrainTile {
     public const int TundraHill = 8;
     public const int SnowHill = 9;
     public const int LENGTH = 10;
+    public static bool IsRiverTraversible(int tile){
+        if(tile==Water||tile==Mountain) return false;
+        return true;
+    }
+    public static bool IsDry(int? tile){
+        if(tile==Desert||tile==Snow||tile==DesertHill||tile==SnowHill)return true;
+        return false;
+    }
 }
 
 public static class ResourceTile {
@@ -40,20 +48,105 @@ public static class TerrainBodyType {
     public const int LENGTH = 5;
 }
 
-public static class RiverSide { 
-    public const int None = 0;
-    public const int Left = 1;
-    public const int Right = 2;
+public static class RiverTile { 
+    public const int Left = 0;
+    public const int Right = 1;
+    public const int Source = 2;
+    public static Dictionary<int, int> RiverTileIndex = new Dictionary<int, int>
+    {
+       {100011, 3},
+       {100111, 4},
+       {110111, 5},
+       {010111,6},
+       {101111,7},
+       {111111,8},
+       {011111,9},
+       {001111,10},
+       {000111,11},
+       {110011,12},
+       {010011,13},
+       {101011,14},
+       {111011,15},
+       {011011,16},
+       {001011,17},
+       {000011,18},
+       {100001,19},
+       {100101,20},
+       {110101,21},
+       {010101,22},
+       {101101,23},
+       {111101,24},
+       {011101,25},
+       {001101,26},
+       {000101,27},
+       {110001,28},
+       {010001,29},
+       {101001,30},
+       {111001,31},
+       {011001,32},
+       {001001,33},
+       {000001,34},
+       {100010,35},
+       {100110,36},
+       {110110,37},
+       {010110,38},
+       {101110,39},
+       {111110,40},
+       {011110,41},
+       {001110,42},
+       {000110,43},
+       {110010,44},
+       {010010,45},
+       {101010,46},
+       {111010,47},
+       {011010,48},
+       {001010,49},
+       {000010,50},
+       {100000,51},
+       {100100,52},
+       {110100,53},
+       {010100,54},
+       {101100,55},
+       {111100,56},
+       {011100,57},
+       {001100,58},
+       {000100,59},
+       {110000,60},
+       {010000,61},
+       {101000,62},
+       {111000,63},
+       {011000,64},
+       {001000,65}
+    };
 }
 
 public static class Direction { //depends on the order of directions looked at in GetLocationsOnRing
-    public const int BottomLeft = 0;
-    public const int BottomRight = 1;
-    public const int Right = 2;
-    public const int TopRight = 3;
-    public const int TopLeft = 4;
-    public const int Left = 5;
+    // adding makes you go counterclockwise
+    // subtracting makes you go clockwise
+    public const int BottomLeft = 0; //bl
+    public const int BottomRight = 1; //br
+    public const int Right = 2; //r
+    public const int TopRight = 3; //tr
+    public const int TopLeft = 4; //tl
+    public const int Left = 5; //l
     public const int LENGTH = 6;
+    public static int OppositeDirection(int dir){
+        switch(dir){
+            case BottomLeft:
+                return TopRight;
+            case BottomRight:
+                return TopLeft;
+            case Right:
+                return Left;
+            case TopRight:
+                return BottomLeft;
+            case TopLeft:
+                return BottomRight;
+            case Left:
+                return Right;
+        }
+        return -1;
+    }
 }
 
 public class GameActivity : MonoBehaviour
@@ -64,10 +157,11 @@ public class GameActivity : MonoBehaviour
     public Tilemap terrain;
     public Tilemap resources;
     public Tilemap improvements;
+    public Tilemap rivers;
     public Tile[] terrainTile;
     public Tile[] resourceTile;
     public Tile[] improvementTile;
-
+    public Tile[] riverTile;
     public TerrainMap terrainMap;
 
     private Vector3 oldCameraPostion;
@@ -78,7 +172,6 @@ public class GameActivity : MonoBehaviour
 
     void Start()
     {
-       
         gameModel = new GameModel(this, 120, 100);
         terrainMap = new TerrainMap(this);
         AddObserver(terrainMap);
@@ -101,7 +194,7 @@ public class GameActivity : MonoBehaviour
             "Hex info: " + hex.COL + " " + hex.ROW + " Terrain Body Type: " + hex.terrainBodyType + " Coastal: " + hex.coastal+ "\n"+
             "Hex chunk: " + hex.terrainChunk+ "\n"+
             "Chunk info: "+ "Terrain: " + gameModel.terrainChunks[(int)hex.terrainChunk].TERRAIN_TYPE + " ID: " + gameModel.terrainChunks[(int)hex.terrainChunk].CHUNK_ID + 
-            " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size() + " MaxRiverStarts: " + gameModel.terrainChunks[(int)hex.terrainChunk].maxRiverStarts +"\n");
+            " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size() +" Previous direction: " + hex.previousLeftRiverDirection + "\n")  ;
         }
     }
 

@@ -9,7 +9,7 @@ public interface RandomGenerator<T> {
 
 public class UnityRandom : RandomGenerator<int> {
     int seed;
-    UnityRandom(int seed) {
+    public UnityRandom(int seed) {
         this.seed = seed;
         UnityEngine.Random.InitState(seed);
     }
@@ -21,7 +21,7 @@ public class UnityRandom : RandomGenerator<int> {
 
 public class SystemRandom : RandomGenerator<int> {
     System.Random r;
-    SystemRandom() {
+    public SystemRandom() {
         r = new System.Random();
     }
 

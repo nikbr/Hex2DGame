@@ -9,13 +9,17 @@ public class HexModel
 {
     public readonly int COL;
     public readonly int ROW;
-
+#nullable enable
     public int? terrainTile = null;
     public int? resourceTile = null;
     public int? improvementTile = null;
+    public int? riverTile = null;
+    public bool[]? riverNeighbors = null; 
+    public int? previousLeftRiverDirection = null;
+    public int? nextLeftRiverDirection = null;
 
     public int? terrainChunk = null;
-
+#nullable disable
     public int cityScore = 0;
     public int movementPoints = 0;
 
@@ -50,7 +54,9 @@ public class HexModel
     public Tile improvement(GameActivity context){
         return (this.improvementTile != null) ? context.improvementTile[(int) improvementTile] : null;
     }
-
+    public Tile river(GameActivity context){
+        return (this.riverTile != null) ? context.riverTile[(int) riverTile] : null;
+    } 
     public bool IsWater(){
         return terrainTile==Water;
     }
