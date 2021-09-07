@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -59,6 +60,22 @@ public class HexModel
     } 
     public bool IsWater(){
         return terrainTile==Water;
+    }
+    public int? RiverTileIndex(){
+        if(riverNeighbors==null) return null;
+        int index = 0;
+        for(int i = 0;i<riverNeighbors.Length;i++){
+            if(riverNeighbors[i])index+=(int)Math.Pow(10, i);
+        }
+        return index;
+    }
+    public int GetNumberOfRiverNeighbors(){
+        if(riverNeighbors==null) return 0;
+        int total = 0;
+        foreach(bool n in riverNeighbors){
+            if(n) total++;
+        }
+        return total;
     }
 
     public Vector3Int Position(){

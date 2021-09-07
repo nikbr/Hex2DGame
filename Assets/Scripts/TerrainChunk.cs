@@ -17,7 +17,7 @@ public class TerrainChunk
         if(TERRAIN_TYPE == hex.terrainTile&&CHUNK_ID == hex.terrainChunk){
             hexesInChunk.Add(new Vector3Int(hex.COL, hex.ROW, 0));
         }else{
-            Debug.Log("Could insert into chunk. Check terrain type and chunk ID.");
+            Debug.Log("Could not insert into chunk. Check terrain type and chunk ID.");
         }
     }
     public List<Vector3Int> GetHexesLocations(){

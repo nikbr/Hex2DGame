@@ -100,7 +100,18 @@ public class GameModel
         }
         return locs;
     }
-
+    public bool[] GetNeighborsWithRiverTileType(int x, int y, int tileType){
+        bool[] neighborsWithRiverTileType = new bool[Direction.LENGTH];
+        Vector3Int[] neighborLocs =  GetNeighbors(new Vector3Int(x,y,0));
+        for(int i = 0;i<neighborLocs.Length;i++){
+            if(GetHexModel(neighborLocs[i].x, neighborLocs[i].y)!=null){
+                neighborsWithRiverTileType[i]=GetHexModel(neighborLocs[i].x, neighborLocs[i].y).riverTile==tileType;
+            }else{
+                neighborsWithRiverTileType[i]=false;
+            }
+        }
+        return neighborsWithRiverTileType; 
+    }
     public Vector3Int[] GetNeighbors(Vector3Int center){
         return GetLocationsOnRing(center, 2).ToArray();
     }
