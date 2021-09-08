@@ -241,6 +241,7 @@ public class TerrainMap : Observer
     private void CreateMountainRivers(GameActivity context){
         for(int column = 0; column<context.gameModel.COLS;column++){
             for(int row = 0; row < context.gameModel.ROWS; row++){
+
                 bool isSource = false;
                 HexModel hex = context.gameModel.GetHexModel(column, row);
                 if(hex.terrainTile==Mountain&&hex.ROW>southPole&&hex.ROW<northPole){
@@ -250,178 +251,118 @@ public class TerrainMap : Observer
                         int index = i%neighborLocs.Length;
                         HexModel neighborHex = context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y);
                         if(neighborHex==null) continue;
-                        int blockerOneLoc = index-1;
-                        if(blockerOneLoc<0){
-                            blockerOneLoc+=6;
-                        }else if(blockerOneLoc>0){
-                            blockerOneLoc%=6;
-                        }
-                        int blockerTwoLoc = index+1;
-                        if(blockerTwoLoc<0){
-                            blockerTwoLoc+=6;
-                        }else if(blockerTwoLoc>0){
-                            blockerTwoLoc%=6;
+                        int blockerLoc = index-1;
+                        if(blockerLoc<0){
+                            blockerLoc+=6;
+                        }else if(blockerLoc>0){
+                            blockerLoc%=6;
                         }
                         //Debug.Log(neighborLocs.Length + " "+ blockerOneLoc + " " + blockerTwoLoc);
-                        HexModel blockerOneHex = context.gameModel.GetHexModel(neighborLocs[blockerOneLoc].x, neighborLocs[blockerOneLoc].y);
-                        HexModel blockerTwoHex = context.gameModel.GetHexModel(neighborLocs[blockerTwoLoc].x, neighborLocs[blockerTwoLoc].y);
-                        int? blockerOne=null;
-                        int? blockerTwo=null;
-                        if(blockerOneHex!=null)blockerOne=blockerOneHex.riverTile;
-                        if(blockerTwoHex!=null)blockerTwo=blockerTwoHex.riverTile;
-
-                        if(IsRiverTraversible((int)neighborHex.terrainTile)&&blockerOne==null&&blockerTwo==null&&blockerOneHex!=null&&blockerOneHex.terrainTile!=Water&&blockerOneHex.terrainTile!=Mountain){
+                        HexModel blockerHex = context.gameModel.GetHexModel(neighborLocs[blockerLoc].x, neighborLocs[blockerLoc].y);
+                        if(IsRiverTraversible((int)neighborHex.terrainTile)&&blockerHex!=null&&blockerHex.terrainTile!=Water&&blockerHex.terrainTile!=Mountain){
                             context.gameModel.GetHexModel(column, row).riverTile=RiverTile.Source;
-                            isSource = true;
-                            context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y).riverTile=RiverTile.Left;
-                            context.gameModel.GetHexModel(neighborLocs[blockerOneLoc].x, neighborLocs[blockerOneLoc].y).riverTile=RiverTile.Right;
-                            // Debug.Log(Direction.OppositeDirection(index));
                             context.gameModel.GetHexModel(column, row).nextLeftRiverDirection = index;
                             context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y).previousLeftRiverDirection = Direction.OppositeDirection(index);
+                            isSource = true;
                             if(!SpawnNextLeftRiver(neighborLocs[index].x, neighborLocs[index].y, context)){
-                                context.gameModel.GetHexModel(column, row).riverTile=null;
                                 isSource = false;
-                                context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y).riverTile=null;
-                                context.gameModel.GetHexModel(neighborLocs[blockerOneLoc].x, neighborLocs[blockerOneLoc].y).riverTile=null;
+                                context.gameModel.GetHexModel(column, row).riverTile=null;
                                 context.gameModel.GetHexModel(column, row).nextLeftRiverDirection = null;
                                 context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y).previousLeftRiverDirection = null;
                                 continue;
                             };
                             break;
                         }
-
                     }
-                    
+                }
+                if(isSource){
                     RefreshMap(context);
-                    if(isSource){
-                            Vector3Int nextLeftRiverLoc = context.gameModel.GetNeighbor(new Vector3Int(column, row,0 ), (int)hex.nextLeftRiverDirection );
-                            PaintRiver(nextLeftRiverLoc.x, nextLeftRiverLoc.y, context);
-                            //return;
-                    }
+                    context.gameModel.GetHexModel(column, row).riverTile=null;
+                    Vector3Int nextLeftLoc = context.gameModel.GetNeighbor(new Vector3Int(column, row, 0), (int)context.gameModel.GetHexModel(column, row).nextLeftRiverDirection);
+
+                    ClearRiverPlaceHolders(nextLeftLoc.x, nextLeftLoc.y, context);
                 }
             }
         }
     }
+    private void ClearRiverPlaceHolders(int x, int y, GameActivity context){
+        int currentX = x;
+        int currentY = y;
+        while(context.gameModel.GetHexModel(currentX, currentY).nextLeftRiverDirection != null){
+            int nextLeftDir = (int) context.gameModel.GetHexModel(currentX, currentY).nextLeftRiverDirection;
+            Debug.Log("Location " +x+" "+y+"            "+nextLeftDir);
+            EmptyRightSideTiles(currentX, currentY, nextLeftDir, context);
+            context.gameModel.GetHexModel(currentX, currentY).riverTile = null;
+            Vector3Int nextLeftLoc = context.gameModel.GetNeighbor(new Vector3Int(currentX, currentY, 0), nextLeftDir);
+            currentX = nextLeftLoc.x;
+            currentY = nextLeftLoc.y; 
+        }
+        context.gameModel.GetHexModel(currentX, currentY).riverTile = null;
+        EmptyRightSideTiles(currentX, currentY, (int)context.gameModel.GetHexModel(currentX, currentY).previousLeftRiverDirection, context);
+    }
+    private bool SpawnNextLeftRiver(int x, int y, GameActivity context){
+        context.gameModel.GetHexModel(x, y).riverTile=RiverTile.Left;
+        Vector3Int[] neighborLocs = context.gameModel.GetNeighbors(new Vector3Int(x, y, 0));
+        int randOffset = randomGen.Range(0, neighborLocs.Length);
+        if(context.gameModel.GetHexModel(x, y).riverNeighbors!=null){
+            for(int j = 0;j<Direction.LENGTH;j++){
+                if(context.gameModel.GetHexModel(x, y).riverNeighbors[j]){
+                    if(CanFitRightSide(x,y,j,context)){
+                        FillRightSide(x, y, j, context);
+                        bool[] rightNeighbors = context.gameModel.GetNeighborsWithRiverTileType(x,y,RiverTile.Right);
+                        context.gameModel.GetHexModel(x,y).AddRiverNeighbors(rightNeighbors);
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+            }
+        }
+        for(int i = randOffset;i<neighborLocs.Length+randOffset;i++){
+            int index = i%neighborLocs.Length;
+            Vector3Int neighborLoc = neighborLocs[index];
+            HexModel neighborHex = context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y);
+            if(neighborHex==null) continue;
+            if(neighborHex.terrainTile==Water&&CanFitRightSide(x, y, index, context)){
+                FillRightSide(x, y, index, context);
+                bool[] rightNeighbors = context.gameModel.GetNeighborsWithRiverTileType(x,y,RiverTile.Right);
+                context.gameModel.GetHexModel(x,y).AddRiverNeighbors(rightNeighbors);
+                return true;
+            }
+
+
+            if(IsRiverTraversible((int) neighborHex.terrainTile)&&neighborHex.riverTile!=RiverTile.Right&&neighborHex.riverTile!=RiverTile.Source&&neighborHex.riverTile!=RiverTile.Left&&CanFitRightSide(x, y, index, context)){
+                context.gameModel.GetHexModel(x, y).nextLeftRiverDirection = index;
+                context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).previousLeftRiverDirection = Direction.OppositeDirection(index);
+                FillRightSide(x, y, index, context);
+                //populate riverNeighbors
+                bool[] rightNeighbors = context.gameModel.GetNeighborsWithRiverTileType(x,y,RiverTile.Right);
+                context.gameModel.GetHexModel(x,y).AddRiverNeighbors(rightNeighbors);
+                if(!SpawnNextLeftRiver(neighborLoc.x, neighborLoc.y, context)){
+                    EmptyRightSide(x,y, index, context);
+                    context.gameModel.GetHexModel(x, y).nextLeftRiverDirection = null;
+                    context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).previousLeftRiverDirection = null;
+                    //Debug.Log("Emptying L:");
+                    context.gameModel.GetHexModel(x, y).riverTile=null;
+                    context.gameModel.GetHexModel(x,y).RemoveRiverNeighbors(rightNeighbors);
+                    return false;
+                }
+                return true;
+            }
+
+        }
+        context.gameModel.GetHexModel(x, y).riverTile=null;
+        return false;
+    }
+    
     private void CreateHillRivers(GameActivity context){
 
     }
     private void CreateSeaLakeRivers(GameActivity context){
 
     }
-   /* 
-    private void CreateRiversOld(GameActivity context){
-        //List<Vector3Int> sources = new List<Vector3Int>();
-        for (int column = 0; column<context.gameModel.COLS;column++){ //maybe reduce this to specific chunks of appropriate type
-            for(int row = 0; row < context.gameModel.ROWS; row++){
-                bool isSource = false;
-                HexModel hex = context.gameModel.GetHexModel(column, row);
-                if((hex.terrainTile==GrassHill||hex.terrainTile==TundraHill)||(hex.terrainTile==Mountain&&hex.ROW>southPole&&hex.ROW<northPole)){
-                    Vector3Int[] neighborLocs = context.gameModel.GetNeighbors(new Vector3Int(column, row, 0));
-                    int randOffset = randomGen.Range(0, neighborLocs.Length); //to remove directional bias
-                    for(int i = randOffset;i<neighborLocs.Length+randOffset;i++){
-                        int index = i%neighborLocs.Length;
-                        HexModel neighborHex = context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y);
-                        if(neighborHex==null) continue;
-                        int blockerOneLoc = index-1;
-                        if(blockerOneLoc<0){
-                            blockerOneLoc+=6;
-                        }else if(blockerOneLoc>0){
-                            blockerOneLoc%=6;
-                        }
-                        int blockerTwoLoc = index+1;
-                        if(blockerTwoLoc<0){
-                            blockerTwoLoc+=6;
-                        }else if(blockerTwoLoc>0){
-                            blockerTwoLoc%=6;
-                        }
-                        //Debug.Log(neighborLocs.Length + " "+ blockerOneLoc + " " + blockerTwoLoc);
-                        HexModel blockerOneHex = context.gameModel.GetHexModel(neighborLocs[blockerOneLoc].x, neighborLocs[blockerOneLoc].y);
-                        HexModel blockerTwoHex = context.gameModel.GetHexModel(neighborLocs[blockerTwoLoc].x, neighborLocs[blockerTwoLoc].y);
-                        int? blockerOne=null;
-                        int? blockerTwo=null;
-                        if(blockerOneHex!=null)blockerOne=blockerOneHex.riverTile;
-                        if(blockerTwoHex!=null)blockerTwo=blockerTwoHex.riverTile;
-                        if(IsRiverTraversible((int)neighborHex.terrainTile)&&blockerOne==null&&blockerTwo==null&&blockerOneHex!=null&&blockerOneHex.terrainTile!=Water&&blockerOneHex.terrainTile!=Mountain){
-                            int randInt = randomGen.Range(0, 30);
-                            if((hex.terrainTile!=Mountain&&randInt==2)||(hex.terrainTile==Mountain&&randInt<4)){
-                                context.gameModel.GetHexModel(column, row).riverTile=RiverTile.Source;
-                                isSource = true;
-                                context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y).riverTile=RiverTile.Left;
-                                context.gameModel.GetHexModel(neighborLocs[blockerOneLoc].x, neighborLocs[blockerOneLoc].y).riverTile=RiverTile.Right;
-                               // Debug.Log(Direction.OppositeDirection(index));
-                                context.gameModel.GetHexModel(column, row).nextLeftRiverDirection = index;
-                                context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y).previousLeftRiverDirection = Direction.OppositeDirection(index);
-                                SpawnNextLeftRiver(neighborLocs[index].x, neighborLocs[index].y, context);
-                                break;
-                            }
-                        }
-                    }
-                    //Replace placeholders here
-                   // hex = context.gameModel.GetHexModel(column, row);
-                   RefreshMap(context);
-                   if(isSource){
-                        Vector3Int nextLeftRiverLoc = context.gameModel.GetNeighbor(new Vector3Int(column, row,0 ), (int)hex.nextLeftRiverDirection );
-                        PaintRiver(nextLeftRiverLoc.x, nextLeftRiverLoc.y, context);
-                        return;
-                   }
-                }
-            }
-        }
-    }
-    */
-    public void PaintRiver(int x, int y, GameActivity context){
-        bool[] rightNeighbors = context.gameModel.GetNeighborsWithRiverTileType(x,y,RiverTile.Right);
-        Debug.Log(context.gameModel.GetHexModel(x,y).RiverTileIndex());
-        context.gameModel.GetHexModel(x,y).riverTile = RiverTile.RiverTileIndex[(int)context.gameModel.GetHexModel(x,y).RiverTileIndex()];
-        for(int i = 0;i<rightNeighbors.Length;i++){
-            if(rightNeighbors[i]){
-                Vector3Int neighborLoc = context.gameModel.GetNeighbor(new Vector3Int(x,y,0), i);
-                context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).riverTile = RiverTile.RiverTileIndex[(int)context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).RiverTileIndex()];
-            }
-        }
-        if(context.gameModel.GetHexModel(x,y).nextLeftRiverDirection!=null){
-            Vector3Int nextLeftNeighbor = context.gameModel.GetNeighbor(new Vector3Int(x,y,0),(int) context.gameModel.GetHexModel(x,y).nextLeftRiverDirection);
-            PaintRiver(nextLeftNeighbor.x, nextLeftNeighbor.y, context);
-        }else{
-            return;
-        }
-    }
-    public bool SpawnNextLeftRiver(int x, int y, GameActivity context){
-        Vector3Int[] neighborLocs = context.gameModel.GetNeighbors(new Vector3Int(x, y, 0));
-        int randOffset = randomGen.Range(0, neighborLocs.Length); //to remove directional bias
-        for(int i = randOffset;i<neighborLocs.Length+randOffset;i++){
-            int index = i%neighborLocs.Length;
-            Vector3Int neighborLoc = neighborLocs[index];
-            HexModel neighborHex = context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y);
-            if(neighborHex==null) continue;
-            //Debug.Log("OppositeDirection: " + Direction.OppositeDirection(index));
-            if(neighborHex.terrainTile==Water&&CanFitRightSide(x, y, index, context)){
-                FillRightSide(x, y, index, context);
-                bool[] rightNeighbors = context.gameModel.GetNeighborsWithRiverTileType(x,y,RiverTile.Right);
-                context.gameModel.GetHexModel(x,y).riverNeighbors=rightNeighbors;
-                return true;
-            }
-            if(IsRiverTraversible((int) neighborHex.terrainTile)&&neighborHex.riverTile!=RiverTile.Right&&neighborHex.riverTile!=RiverTile.Source&&neighborHex.riverTile!=RiverTile.Left&&CanFitRightSide(x, y, index, context)){
-                context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).riverTile=RiverTile.Left;
-                context.gameModel.GetHexModel(x, y).nextLeftRiverDirection = index;
-                context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).previousLeftRiverDirection = Direction.OppositeDirection(index);
-                FillRightSide(x, y, index, context);
-                //populate riverNeighbors
-                bool[] rightNeighbors = context.gameModel.GetNeighborsWithRiverTileType(x,y,RiverTile.Right);
-                context.gameModel.GetHexModel(x,y).riverNeighbors=rightNeighbors;
-                if(!SpawnNextLeftRiver(neighborLoc.x, neighborLoc.y, context)){
-                    EmptyRightSide(x,y, index, context);
-                    context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).riverTile=null;
-                    context.gameModel.GetHexModel(x, y).nextLeftRiverDirection = null;
-                    context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).previousLeftRiverDirection = null;
-                    context.gameModel.GetHexModel(x,y).riverNeighbors=null;
-                    return false;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
+
+    
 
     public bool CanFitRightSide(int currentX, int currentY, int nextDirection, GameActivity context){
         HexModel currentHex = context.gameModel.GetHexModel(currentX, currentY);
@@ -443,13 +384,15 @@ public class TerrainMap : Observer
 
     public void FillRightSide(int currentX, int currentY, int nextDirection, GameActivity context){
         HexModel currentHex = context.gameModel.GetHexModel(currentX, currentY);
+        bool[] rightNeighbors = new bool[Direction.LENGTH];
         if(currentHex.previousLeftRiverDirection+1>nextDirection) nextDirection+=Direction.LENGTH;
         for(int i = (int)currentHex.previousLeftRiverDirection+1;i<nextDirection;i++){
             int index = i%Direction.LENGTH;
             Vector3Int neighborLoc = context.gameModel.GetNeighbor(new Vector3Int(currentX, currentY, 0), index);
             context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).riverTile=RiverTile.Right;
-            bool[] leftNeighbors = context.gameModel.GetNeighborsWithRiverTileType(neighborLoc.x,neighborLoc.y,RiverTile.Left);
-            context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).riverNeighbors = leftNeighbors;
+            bool[] newLeftNeighbor = new bool[Direction.LENGTH];
+            newLeftNeighbor[Direction.OppositeDirection(index)] = true;
+            context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).AddRiverNeighbors(newLeftNeighbor);
         }
     }
 
@@ -460,7 +403,19 @@ public class TerrainMap : Observer
             int index = i%Direction.LENGTH;
             Vector3Int neighborLoc = context.gameModel.GetNeighbor(new Vector3Int(currentX, currentY, 0), index);
             context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).riverTile=null;
-            context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).riverNeighbors=null;
+            bool[] newLeftNeighbor = new bool[Direction.LENGTH];
+            newLeftNeighbor[Direction.OppositeDirection(index)] = true;
+            context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).RemoveRiverNeighbors(newLeftNeighbor);
+        }
+    }
+
+    public void EmptyRightSideTiles(int currentX, int currentY, int nextDirection, GameActivity context){
+        HexModel currentHex = context.gameModel.GetHexModel(currentX, currentY);
+        if(currentHex.previousLeftRiverDirection+1>nextDirection) nextDirection+=Direction.LENGTH;
+        for(int i = (int)currentHex.previousLeftRiverDirection+1;i<nextDirection;i++){
+            int index = i%Direction.LENGTH;
+            Vector3Int neighborLoc = context.gameModel.GetNeighbor(new Vector3Int(currentX, currentY, 0), index);
+            context.gameModel.GetHexModel(neighborLoc.x, neighborLoc.y).riverTile=null;
         }
     }
 

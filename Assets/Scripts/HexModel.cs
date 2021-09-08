@@ -56,11 +56,14 @@ public class HexModel
         return (this.improvementTile != null) ? context.improvementTile[(int) improvementTile] : null;
     }
     public Tile river(GameActivity context){
+        if(riverNeighbors==null) return null;
+        this.riverTile = RiverTile.RiverTileIndex[(int)RiverTileIndex()];
         return (this.riverTile != null) ? context.riverTile[(int) riverTile] : null;
     } 
     public bool IsWater(){
         return terrainTile==Water;
     }
+
     public int? RiverTileIndex(){
         if(riverNeighbors==null) return null;
         int index = 0;
@@ -76,6 +79,24 @@ public class HexModel
             if(n) total++;
         }
         return total;
+    }
+
+    //array of length 6
+    public void AddRiverNeighbors(bool[] newNeighbors){
+        if(riverNeighbors==null) riverNeighbors=newNeighbors;
+        for(int i = 0;i<riverNeighbors.Length;i++){
+            riverNeighbors[i]=riverNeighbors[i]||newNeighbors[i];
+        }
+    }
+
+    public void RemoveRiverNeighbors(bool[] neighors){
+        if(riverNeighbors==null) return;
+        bool notSetToNull = false;
+        for(int i = 0;i<riverNeighbors.Length;i++){
+            if(neighors[i])riverNeighbors[i]=false;
+            notSetToNull = riverNeighbors[i]||notSetToNull;
+        }
+        if(!notSetToNull) riverNeighbors=null;
     }
 
     public Vector3Int Position(){

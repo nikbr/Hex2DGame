@@ -147,6 +147,14 @@ public static class Direction { //depends on the order of directions looked at i
         }
         return -1;
     }
+    public static int IntToDirection(int num){
+        if(num<0){
+            while(num<0)num+=6;
+            return num;
+        }else{
+            return num%6;
+        }
+    }
 }
 
 public class GameActivity : MonoBehaviour
