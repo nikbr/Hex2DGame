@@ -16,10 +16,10 @@ public class HexModel
     public int? improvementTile = null;
     public int? riverTile = null;
     public bool[]? riverNeighbors = null; 
-    public int? previousLeftRiverDirection = null;
-    public int? nextLeftRiverDirection = null;
-
+    public int? previousRiverDirection = null;
+    public int? nextRiverDirection = null;
     public int? terrainChunk = null;
+    public HashSet<int>? visitedWaters = null;
 #nullable disable
     public int cityScore = 0;
     public int movementPoints = 0;
@@ -29,6 +29,7 @@ public class HexModel
 
     public int actualCOL;
 
+    public bool riverSource=false;
 
     public HexModel(int col, int row){
         COL = col;
@@ -44,6 +45,11 @@ public class HexModel
         actualCOL = col;
     }
 
+    public HexModel GetNeighbor(int dir, GameActivity context){
+        Vector3Int loc = context.gameModel.GetNeighbor(new Vector3Int(COL, ROW, 0), dir);
+        return context.gameModel.GetHexModel(loc.x, loc.y);
+    }
+
     public Tile terrain(GameActivity context) {
         return (this.terrainTile != null) ? context.terrainTile[(int)terrainTile] : null;
     }
@@ -57,11 +63,16 @@ public class HexModel
     }
     public Tile river(GameActivity context){
         if(riverNeighbors==null) return null;
+        Debug.Log(RiverTileIndex());
         this.riverTile = RiverTile.RiverTileIndex[(int)RiverTileIndex()];
         return (this.riverTile != null) ? context.riverTile[(int) riverTile] : null;
     } 
     public bool IsWater(){
         return terrainTile==Water;
+    }
+
+    public bool IsHill(){
+        return terrainTile==DesertHill||terrainTile==GrassHill||terrainTile==TundraHill||terrainTile==SnowHill;
     }
 
     public int? RiverTileIndex(){
@@ -89,14 +100,20 @@ public class HexModel
         }
     }
 
-    public void RemoveRiverNeighbors(bool[] neighors){
+    public void RemoveRiverNeighbors(bool[] neighbors){
         if(riverNeighbors==null) return;
         bool notSetToNull = false;
         for(int i = 0;i<riverNeighbors.Length;i++){
-            if(neighors[i])riverNeighbors[i]=false;
+            if(neighbors[i])riverNeighbors[i]=false;
             notSetToNull = riverNeighbors[i]||notSetToNull;
         }
         if(!notSetToNull) riverNeighbors=null;
+    }
+
+    public void RemoveRiverNeighbor(int direction){
+        bool[] neighbors = new bool[Direction.LENGTH];
+        neighbors[direction] = true;
+        RemoveRiverNeighbors(neighbors);
     }
 
     public Vector3Int Position(){

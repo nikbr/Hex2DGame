@@ -23,6 +23,14 @@ public class TerrainChunk
     public List<Vector3Int> GetHexesLocations(){
         return hexesInChunk;
     }
+    public int? GetTerrainType(GameActivity context){
+        return context.gameModel.GetHexModel(hexesInChunk[0].x, hexesInChunk[0].y).terrainTile;
+    }
+
+    public int GetBodyType(GameActivity context){
+        return context.gameModel.GetHexModel(hexesInChunk[0].x, hexesInChunk[0].y).terrainBodyType;
+    }
+
     public int Size(){
         return hexesInChunk.Count;
     }

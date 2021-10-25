@@ -16,7 +16,12 @@ public static class TerrainTile {
     public const int SnowHill = 9;
     public const int LENGTH = 10;
     public static bool IsRiverTraversible(int tile){
-        if(tile==Water||tile==Mountain) return false;
+        if(tile==Mountain) return false;
+        return true;
+    }
+    public static bool IsRiverTraversible(HexModel hex, HashSet<int> visitedWaters){
+        if(hex.terrainTile==Mountain) return false;
+        if(hex.terrainTile==Water&&visitedWaters.Contains((int)hex.terrainChunk))return false;
         return true;
     }
     public static bool IsDry(int? tile){
@@ -202,7 +207,7 @@ public class GameActivity : MonoBehaviour
             "Hex info: " + hex.COL + " " + hex.ROW + " Terrain Body Type: " + hex.terrainBodyType + " Coastal: " + hex.coastal+ "\n"+
             "Hex chunk: " + hex.terrainChunk+ "\n"+
             "Chunk info: "+ "Terrain: " + gameModel.terrainChunks[(int)hex.terrainChunk].TERRAIN_TYPE + " ID: " + gameModel.terrainChunks[(int)hex.terrainChunk].CHUNK_ID + 
-            " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size() +" Previous direction: " + hex.previousLeftRiverDirection + "\n" + 
+            " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size() +" Previous direction: " + hex.previousRiverDirection + "\n" + 
             " RiverNeighbors: " + hex.RiverTileIndex())  ;
         }
     }
