@@ -269,6 +269,9 @@ public class TerrainMap : Observer
         SpawnMountainRivers(context, Ocean);
         SpawnMountainRivers(context, Lake);
         ClearRedundantRivers(context);
+        SpawnAquiferRivers(context, Ocean);
+        ClearRedundantRivers(context);
+
         RemoveDryLakes(context);
         RefreshMap(context);
         
@@ -301,6 +304,63 @@ public class TerrainMap : Observer
 
     }
 
+    private void SpawnAquiferRivers(GameActivity context, int destination){
+        foreach(KeyValuePair<int, TerrainChunk> entry in context.gameModel.terrainChunks){ 
+            if(entry.Value.GetBodyType(context)==Land){
+                foreach(Vector3Int hexLoc in entry.Value.GetHexesLocations()){
+                    HexModel hex = context.gameModel.GetHexModel(hexLoc.x, hexLoc.y);
+                    if(hex.terrainTile==GrassHill||hex.terrainTile==TundraHill){
+                         bool isStart = false;
+                        HashSet<int> visitedWaters =new HashSet<int>();;
+
+                        if(hexLoc.y>southPole&&hexLoc.y<northPole){
+                            int randomFail = randomGen.Range(0, 2);
+                            if(randomFail==0){
+                                Vector3Int[] neighborLocs = context.gameModel.GetNeighbors(new Vector3Int(hexLoc.x, hexLoc.y, 0));
+                                int randOffset = randomGen.Range(0, neighborLocs.Length); //to remove directional bias
+                                for(int i = randOffset;i<neighborLocs.Length+randOffset;i++){
+                                    int index = i%neighborLocs.Length;
+                                    HexModel neighborHex = context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y);
+                                    if(neighborHex==null) continue;
+                                    int blockerDir = index-1;
+                                    if(blockerDir<0){
+                                        blockerDir+=Direction.LENGTH;
+                                    }else if(blockerDir>0){
+                                        blockerDir%=Direction.LENGTH;
+                                    }
+                                    HexModel blockerHex = context.gameModel.GetHexModel(neighborLocs[blockerDir].x, neighborLocs[blockerDir].y);
+                                    if(IsRiverTraversible((int)neighborHex.terrainTile)&&neighborHex.terrainTile!=Water&&blockerHex!=null&&blockerHex.terrainTile!=Water&&IsRiverTraversible((int)blockerHex.terrainTile)){
+                                        isStart = true;
+                                        
+                                        context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y).previousRiverDirection = Direction.OppositeDirection(index);
+                                        context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).riverSource = true;
+                                        context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).riverTile=RiverTile.Source;    
+                                        context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).nextRiverDirection = index;
+                                        Debug.Log("yarse1");
+                                        if(!SpawnNextLeftRiver(neighborLocs[index].x, neighborLocs[index].y, context, visitedWaters, destination)){
+                                            isStart = false;
+                                            context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).nextRiverDirection = null;
+                                            context.gameModel.GetHexModel(neighborLocs[index].x, neighborLocs[index].y).previousRiverDirection = null;
+                                            context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).riverSource = false;
+                                            context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).riverTile=null;
+                                            continue;
+                                        };
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if(isStart){
+                            context.gameModel.GetHexModel(hexLoc.x,  hexLoc.y).riverTile=null;
+                            Vector3Int nextLeftLoc = context.gameModel.GetNeighbor(new Vector3Int(hexLoc.x,  hexLoc.y, 0), (int)context.gameModel.GetHexModel(hexLoc.x,  hexLoc.y).nextRiverDirection); 
+                            Debug.Log("Start Clear");
+                            ClearRiverPlaceHolders(nextLeftLoc.x, nextLeftLoc.y, context, visitedWaters);
+                        }
+                    }
+                }
+            }
+        }
+    }
     private void SpawnMountainRivers(GameActivity context, int destination){ //only to be used with chunkTypeA 
         //go through each chunk
         foreach(KeyValuePair<int, TerrainChunk> entry in context.gameModel.terrainChunks){ 
@@ -352,6 +412,8 @@ public class TerrainMap : Observer
             }
         }
     }
+    
+    
 
     private bool SpawnNextLeftRiver(int x, int y, GameActivity context, HashSet<int> visitedWaters, int  destination){
         
@@ -426,11 +488,7 @@ public class TerrainMap : Observer
         //context.gameModel.GetHexModel(x, y).riverTile=null;
         return false;
     } 
-    private void CreateHillRivers(GameActivity context){
-        
-    }
-    
-   
+
     private void ClearRiverPlaceHolders(int x, int y, GameActivity context, HashSet<int> visitedWaters ){
         int currentX = x;
         int currentY = y;
