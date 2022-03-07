@@ -183,6 +183,13 @@ public class GameActivity : MonoBehaviour
 
     public bool cameraInMiddle = true;
 
+    public bool down = false;
+    public bool up = false;
+    public bool left = false;
+    public bool right = false;
+
+    private readonly float MAP_SCROLL_CONSTANT = 10;
+
     void Start()
     {
         gameModel = new GameModel(this, 120, 100);
@@ -197,7 +204,7 @@ public class GameActivity : MonoBehaviour
     {
         CheckIfCameraInMiddle();
         CheckIfCameraMoved();
-
+        MoveCamera();
         if(Input.GetMouseButtonDown(0)){
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int gridPosition = terrain.WorldToCell(mousePosition);
@@ -210,6 +217,48 @@ public class GameActivity : MonoBehaviour
             " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size() +" Previous direction: " + hex.previousRiverDirection + "\n" + 
             " RiverNeighbors: " + hex.RiverTileIndex())  ;
         }
+    }
+
+    void MoveCamera(){
+        float currentX = Camera.main.transform.position.x;
+        float currentY = Camera.main.transform.position.y;
+        float currentZ = Camera.main.transform.position.z;
+        
+
+        if(Input.GetKeyDown(KeyCode.W)){
+            up = true;
+        }else if(Input.GetKeyDown(KeyCode.S)){
+            down = true;
+        }
+        if(Input.GetKeyDown(KeyCode.A)){
+            left = true;
+        }else if(Input.GetKeyDown(KeyCode.D)){
+            right = true;
+        }
+
+        if(up){
+            currentY+=Time.deltaTime*MAP_SCROLL_CONSTANT;
+        }else if(down){
+            currentY-=Time.deltaTime*MAP_SCROLL_CONSTANT;
+        }
+
+        if(left){
+            currentX-=Time.deltaTime*MAP_SCROLL_CONSTANT;
+        }else if(right){
+            currentX+=Time.deltaTime*MAP_SCROLL_CONSTANT;
+        }
+
+        if(Input.GetKeyUp(KeyCode.W)){
+            up = false;
+        }else if(Input.GetKeyUp(KeyCode.S)){
+            down = false;
+        }
+        if(Input.GetKeyUp(KeyCode.A)){
+            left = false;
+        }else if(Input.GetKeyUp(KeyCode.D)){
+            right = false;
+        }
+        Camera.main.transform.position= new Vector3(currentX, currentY, currentZ);
     }
 
     void CheckIfCameraMoved(){

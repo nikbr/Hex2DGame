@@ -297,6 +297,19 @@ public class TerrainMap : Observer
                     context.gameModel.GetHexModel(column, row).nextRiverDirection=null;
                     context.gameModel.GetHexModel(column, row).previousRiverDirection=null;
                 }
+
+                if(h.riverNeighbors!=null){
+                    for(int i = 0;i<Direction.LENGTH;i++){
+                        if(h.riverNeighbors[i]){
+                            HexModel n = h.GetNeighbor(i, context);
+                            if(n.riverNeighbors!=null){
+                                if(!n.riverNeighbors[Direction.OppositeDirection(i)])context.gameModel.GetHexModel(column, row).RemoveRiverNeighbor(i);
+                            }else{
+                                context.gameModel.GetHexModel(column, row).RemoveRiverNeighbor(i);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -309,7 +322,7 @@ public class TerrainMap : Observer
             if(entry.Value.GetBodyType(context)==Land){
                 foreach(Vector3Int hexLoc in entry.Value.GetHexesLocations()){
                     HexModel hex = context.gameModel.GetHexModel(hexLoc.x, hexLoc.y);
-                    if(hex.terrainTile==GrassHill||hex.terrainTile==TundraHill){
+                    if((hex.terrainTile==GrassHill||hex.terrainTile==TundraHill)&&!hex.riverSource&&hex.riverNeighbors==null){
                          bool isStart = false;
                         HashSet<int> visitedWaters =new HashSet<int>();;
 
