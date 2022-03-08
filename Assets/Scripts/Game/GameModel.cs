@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static TerrainBodyType;
+using System;
 
 public class GameModel
 {
@@ -26,19 +27,21 @@ public class GameModel
     }
 
     public int GetMinCOL(){
-        int min = COLS;
-        int minCol = COLS;
+        int min = Int32.MaxValue;
+        int minCol = 0;
         for (int col =0;col<COLS;col++){
             if(terrainModel[0,col].actualCOL<min){
                 min = terrainModel[0,col].actualCOL;
                 minCol = col;
             }
         }
+
+        Debug.Log(terrainModel[0,minCol].COL + " " );
         return terrainModel[0,minCol].COL;
     }
 
     public int GetMaxCOL(){
-        int max = -COLS;
+        int max = Int32.MinValue;
         int maxCol = 0;
         for (int col =0;col<COLS;col++){
             if(terrainModel[0,col].actualCOL>max){

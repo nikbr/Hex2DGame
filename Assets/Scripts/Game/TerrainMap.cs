@@ -349,7 +349,7 @@ public class TerrainMap : Observer
                                         context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).riverSource = true;
                                         context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).riverTile=RiverTile.Source;    
                                         context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).nextRiverDirection = index;
-                                        Debug.Log("yarse1");
+                                       // Debug.Log("yarse1");
                                         if(!SpawnNextLeftRiver(neighborLocs[index].x, neighborLocs[index].y, context, visitedWaters, destination)){
                                             isStart = false;
                                             context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).nextRiverDirection = null;
@@ -366,7 +366,7 @@ public class TerrainMap : Observer
                         if(isStart){
                             context.gameModel.GetHexModel(hexLoc.x,  hexLoc.y).riverTile=null;
                             Vector3Int nextLeftLoc = context.gameModel.GetNeighbor(new Vector3Int(hexLoc.x,  hexLoc.y, 0), (int)context.gameModel.GetHexModel(hexLoc.x,  hexLoc.y).nextRiverDirection); 
-                            Debug.Log("Start Clear");
+                            //Debug.Log("Start Clear");
                             ClearRiverPlaceHolders(nextLeftLoc.x, nextLeftLoc.y, context, visitedWaters);
                         }
                     }
@@ -402,7 +402,7 @@ public class TerrainMap : Observer
                                 context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).riverSource = true;
                                 context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).riverTile=RiverTile.Source;    
                                 context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).nextRiverDirection = index;
-                                Debug.Log("yarse1");
+                                //("yarse1");
                                 if(!SpawnNextLeftRiver(neighborLocs[index].x, neighborLocs[index].y, context, visitedWaters, destination)){
                                     isStart = false;
                                     context.gameModel.GetHexModel(hexLoc.x, hexLoc.y).nextRiverDirection = null;
@@ -418,7 +418,7 @@ public class TerrainMap : Observer
                     if(isStart){
                         context.gameModel.GetHexModel(hexLoc.x,  hexLoc.y).riverTile=null;
                         Vector3Int nextLeftLoc = context.gameModel.GetNeighbor(new Vector3Int(hexLoc.x,  hexLoc.y, 0), (int)context.gameModel.GetHexModel(hexLoc.x,  hexLoc.y).nextRiverDirection); 
-                        Debug.Log("Start Clear");
+                        //Debug.Log("Start Clear");
                         ClearRiverPlaceHolders(nextLeftLoc.x, nextLeftLoc.y, context, visitedWaters);
                     }
                 }
@@ -444,7 +444,7 @@ public class TerrainMap : Observer
             }
         }
         if(context.gameModel.GetHexModel(x, y).riverNeighbors!=null){
-            Debug.Log("yarse4");
+            //Debug.Log("yarse4");
 
             if(context.gameModel.GetHexModel(x, y).visitedWaters!=null){
                 var temp = visitedWaters;
@@ -476,7 +476,7 @@ public class TerrainMap : Observer
                 //populate riverNeighbors
                 bool[] rightNeighbors = context.gameModel.GetNeighborsWithRiverTileType(x,y,RiverTile.Right);
                 context.gameModel.GetHexModel(x,y).AddRiverNeighbors(rightNeighbors);
-                Debug.Log("yarse2");
+                //("yarse2");
                 HexModel curHex = context.gameModel.GetHexModel(x, y);
                 Vector3Int prevLoc = context.gameModel.GetNeighbor(new Vector3Int(x,y,0), (int)curHex.previousRiverDirection);
                 HexModel prevHex = context.gameModel.GetHexModel(prevLoc.x, prevLoc.y);
@@ -510,7 +510,7 @@ public class TerrainMap : Observer
         Vector3Int nextLeftLoc;
         while(nextLeftDir!=null&&!context.gameModel.GetHexModel(currentX, currentY).riverSource){
             
-            Debug.Log("yarse5" + "x " + currentX + "y " + currentY + "next left ");
+            //Debug.Log("yarse5" + "x " + currentX + "y " + currentY + "next left ");
 //Debug.Log("Location " +x+" "+y+"            "+nextLeftDir);
             EmptyRightSideTiles(currentX, currentY, (int) nextLeftDir, context, visitedWaters);
 
@@ -532,7 +532,7 @@ public class TerrainMap : Observer
         context.gameModel.GetHexModel(currentX, currentY).riverTile = null;
         EmptyRightSideTiles(currentX, currentY, (int)context.gameModel.GetHexModel(currentX, currentY).previousRiverDirection, context, visitedWaters);
 
-        Debug.Log("yarse8");
+       // Debug.Log("yarse8");
     }
 
     
@@ -675,6 +675,7 @@ public class TerrainMap : Observer
     private void UpdateMap(GameActivity context){
         int minCOL = context.gameModel.GetMinCOL();
         int maxCOL = context.gameModel.GetMaxCOL();
+        //Debug.Log(minCOL + ", " + maxCOL);
         for (int row = 0; row<context.gameModel.ROWS; row++){
             HexModel hLeft = context.gameModel.terrainModel[row,minCOL];
             HexModel hRight = context.gameModel.terrainModel[row,maxCOL];

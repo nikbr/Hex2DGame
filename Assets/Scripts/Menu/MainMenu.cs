@@ -8,8 +8,8 @@ public class MainMenu : MonoBehaviour
 {
    public Button playButton;
    public void Start(){
-      Debug.Log("started");
-      Debug.Log(playButton);
+     // Debug.Log("started");
+     // Debug.Log(playButton);
       playButton.onClick.AddListener(delegate{
          Loader.Load(Loader.Scene.GameMap);
       });

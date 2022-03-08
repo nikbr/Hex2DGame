@@ -27,7 +27,7 @@ public class HexModel
     public bool coastal = false;
     public int terrainBodyType = Ocean;
 
-    public int actualCOL;
+    public int actualCOL; //Actual col on the grid
 
     public bool riverSource=false;
 
@@ -63,7 +63,7 @@ public class HexModel
     }
     public Tile river(GameActivity context){
         if(riverNeighbors==null) return null;
-        Debug.Log(RiverTileIndex());
+       // Debug.Log(RiverTileIndex());
         this.riverTile = RiverTile.RiverTileIndex[(int)RiverTileIndex()];
         return (this.riverTile != null) ? context.riverTile[(int) riverTile] : null;
     } 
