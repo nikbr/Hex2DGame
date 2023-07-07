@@ -45,7 +45,7 @@ public class TerrainMap : Observer
             for(int row = 0; row < context.gameModel.ROWS; row++){
                 HexModel h = new HexModel(column, row, Water);
                 context.gameModel.terrainModel[row,column] = h;
-                context.terrain.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS), h.terrain(context));
+                context.terrain.SetTile(h.PositionFromCamera( context.gameModel.GameCameraPos, context.gameModel.COLS, context.gameModel.ROWS), h.terrain(context));
             }
         }
     }
@@ -665,9 +665,9 @@ public class TerrainMap : Observer
         for(int q = 0;q<context.gameModel.COLS;q++){
             for(int r = 0;r<context.gameModel.ROWS;r++){
                 HexModel h = context.gameModel.terrainModel[r,q];
-                context.terrain.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS), h.terrain(context));
-                context.resources.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS), h.resource(context));
-                context.rivers.SetTile(h.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS), h.river(context));
+                context.terrain.SetTile(h.PositionFromCamera( context.gameModel.GameCameraPos, context.gameModel.COLS, context.gameModel.ROWS), h.terrain(context));
+                context.resources.SetTile(h.PositionFromCamera( context.gameModel.GameCameraPos, context.gameModel.COLS, context.gameModel.ROWS), h.resource(context));
+                context.rivers.SetTile(h.PositionFromCamera( context.gameModel.GameCameraPos, context.gameModel.COLS, context.gameModel.ROWS), h.river(context));
             }
         }
     }
@@ -681,9 +681,9 @@ public class TerrainMap : Observer
             HexModel hRight = context.gameModel.terrainModel[row,maxCOL];
 
             Vector3Int oldLeftPos = hLeft.Position();
-            Vector3Int newLeftPos = hLeft.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS);
+            Vector3Int newLeftPos = hLeft.PositionFromCamera( context.gameModel.GameCameraPos, context.gameModel.COLS, context.gameModel.ROWS);
             Vector3Int oldRightPos = hRight.Position();
-            Vector3Int newRightPos = hRight.PositionFromCamera(Camera.main.transform.position, context.gameModel.COLS, context.gameModel.ROWS);
+            Vector3Int newRightPos = hRight.PositionFromCamera( context.gameModel.GameCameraPos, context.gameModel.COLS, context.gameModel.ROWS);
 
             if(oldLeftPos.x!=newLeftPos.x||oldRightPos.x!=newRightPos.x) {
                 context.cameraInMiddle=false;

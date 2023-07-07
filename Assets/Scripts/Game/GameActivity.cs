@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public static class TerrainTile {
     public const int Water = 0;
@@ -162,6 +164,13 @@ public static class Direction { //depends on the order of directions looked at i
     }
 }
 
+public static class MinimapSettings{
+    public const float widthRatio = 0.01892f;
+    public const float heightRatio = 0.01f;
+
+    public const float fovRatio = 0.51f;
+}
+
 public class GameActivity : MonoBehaviour
 {
 
@@ -171,15 +180,32 @@ public class GameActivity : MonoBehaviour
     public Tilemap resources;
     public Tilemap improvements;
     public Tilemap rivers;
+
+    public Tilemap terrainMinimap;
+    public Tilemap resourcesMinimap;
+    public Tilemap improvementsMinimap;
+    public Tilemap riversMinimap;
+    public Tilemap cameraEdgeMinimap;
+
     public Tile[] terrainTile;
     public Tile[] resourceTile;
     public Tile[] improvementTile;
     public Tile[] riverTile;
+
+    public Tile cameraEdgeTile;
+
     public TerrainMap terrainMap;
+    public MiniMap miniMap;
+
+    public GameObject minimapObject;
 
     private Vector3 oldCameraPostion;
 
     private List<Observer> observers = new List<Observer>();
+
+    public Camera minimapCamera;
+
+    private WorldCamera worldCamera;
 
     public bool cameraInMiddle = true;
 
@@ -192,11 +218,38 @@ public class GameActivity : MonoBehaviour
 
     void Start()
     {
-        gameModel = new GameModel(this, 120, 100);
+        gameModel = new GameModel(this, 100, 50);
+
+        SetupMinimapCamera();
+
+        
+
         terrainMap = new TerrainMap(this);
+        miniMap = new MiniMap(this);
+        worldCamera = new WorldCamera(this);
         AddObserver(terrainMap);
+        
+        AddObserver(worldCamera);
+        AddObserver(miniMap);
         oldCameraPostion = Camera.main.transform.position;
+        gameModel.GameCameraPos =  Camera.main.transform.position;
         RunTests();
+    }
+
+    void SetupMinimapCamera(){
+        minimapCamera.aspect = (gameModel.COLS*MinimapSettings.widthRatio)/(gameModel.ROWS*MinimapSettings.heightRatio);
+        GridLayout gridLayout = cameraEdgeMinimap.GetComponentInParent<GridLayout>();
+        Vector3 worldPos = gridLayout.CellToWorld(new Vector3Int(gameModel.COLS/2-1, gameModel.ROWS/2+1, 0));
+
+        float cellHeight = gridLayout.CellToWorld(new Vector3Int(0, 1, 0)).y-gridLayout.CellToWorld(new Vector3Int(0, 0, 0)).y;
+
+         
+
+        minimapCamera.transform.position = new Vector3(worldPos.x+cellHeight, worldPos.y-cellHeight, -59);
+        minimapCamera.fieldOfView = gameModel.ROWS*MinimapSettings.fovRatio;
+
+        //minimapObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameModel.ROWS*(float)2.67);
+        minimapObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, minimapCamera.aspect *  gameModel.ROWS*(float)2.67);
     }
 
     // Update is called once per frame
@@ -207,22 +260,76 @@ public class GameActivity : MonoBehaviour
         MoveCamera();
         if(Input.GetMouseButtonDown(0)){
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int gridPosition = terrain.WorldToCell(mousePosition);
+            try{
+            
+                Vector3Int gridPosition = terrain.WorldToCell(mousePosition);
 
-            HexModel hex = gameModel.GetHexModel(gridPosition.x, gridPosition.y);
-            Debug.Log("Grid position: "+ gridPosition.x + " " + gridPosition.y + " " + gridPosition.z + "\n"+
-            "Hex info: " + hex.COL + " " + hex.ROW + " Terrain Body Type: " + hex.terrainBodyType + " Coastal: " + hex.coastal+ "\n"+
-            "Hex chunk: " + hex.terrainChunk+ "\n"+
-            "Chunk info: "+ "Terrain: " + gameModel.terrainChunks[(int)hex.terrainChunk].TERRAIN_TYPE + " ID: " + gameModel.terrainChunks[(int)hex.terrainChunk].CHUNK_ID + 
-            " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size() +" Previous direction: " + hex.previousRiverDirection + "\n" + 
-            " RiverNeighbors: " + hex.RiverTileIndex())  ;
+                HexModel hex = gameModel.GetHexModel(gridPosition.x, gridPosition.y);
+                Debug.Log("Grid position: "+ gridPosition.x + " " + gridPosition.y + " " + gridPosition.z + "\n"+
+                "Hex info: " + hex.COL + " " + hex.ROW + " Terrain Body Type: " + hex.terrainBodyType + " Coastal: " + hex.coastal+ "\n"+
+                "Hex chunk: " + hex.terrainChunk+ "\n"+
+                "Chunk info: "+ "Terrain: " + gameModel.terrainChunks[(int)hex.terrainChunk].TERRAIN_TYPE + " ID: " + gameModel.terrainChunks[(int)hex.terrainChunk].CHUNK_ID + 
+                " Size: " + gameModel.terrainChunks[(int)hex.terrainChunk].Size() +" Previous direction: " + hex.previousRiverDirection + "\n" + 
+                " RiverNeighbors: " + hex.RiverTileIndex())  ;
+            
+            }catch(Exception ex){
+                Debug.Log("Outside of grid.");
+            }
         }
     }
 
+    public void UpdateCameraCornerPositions(){
+        Vector3 TopLeftScreen = new Vector3(0, Screen.height );
+        Vector3 TopRightScreen = new Vector3(Screen.width, Screen.height);
+        Vector3 BottomLeftScreen = new Vector3(0, 0);
+        Vector3 BottomRightScreen = new Vector3(Screen.width, 0);
+        Vector2 TopLeftWorld = Camera.main.ScreenToWorldPoint(TopLeftScreen);
+        Vector2 TopRightWorld = Camera.main.ScreenToWorldPoint(TopRightScreen);
+        Vector2 BottomLeftWorld = Camera.main.ScreenToWorldPoint(BottomLeftScreen);
+        Vector2 BottomRightWorld = Camera.main.ScreenToWorldPoint(BottomRightScreen);
+        
+        Vector3Int TopLeftGrid;
+        Vector3Int TopRightGrid;
+        Vector3Int BottomLeftGrid;
+        Vector3Int BottomRightGrid;
+
+        try{
+            TopLeftGrid = terrain.WorldToCell(TopLeftWorld);
+        }catch(Exception ex){
+            BottomLeftGrid = terrain.WorldToCell(BottomLeftWorld);
+            TopLeftGrid = terrain.WorldToCell(new Vector3Int(BottomLeftGrid.x, gameModel.ROWS-1, 0));
+        }
+
+        try{
+            TopRightGrid = terrain.WorldToCell(TopRightWorld);
+        }catch(Exception ex){
+            BottomRightGrid = terrain.WorldToCell(BottomRightWorld);
+            TopRightGrid = terrain.WorldToCell(new Vector3Int(BottomRightGrid.x, gameModel.ROWS-1, 0));
+        }
+
+        try{
+            BottomLeftGrid = terrain.WorldToCell(BottomLeftWorld);
+        }catch(Exception ex){
+            BottomLeftGrid = terrain.WorldToCell(new Vector3Int(TopLeftGrid.x,0,0));
+        }
+
+        try{
+            BottomRightGrid = terrain.WorldToCell(BottomRightWorld);
+        }catch(Exception ex){
+            BottomRightGrid = terrain.WorldToCell(new Vector3Int(TopRightGrid.x,0,0));
+        }
+        
+        gameModel.SetCornerPosition(GameModel.TOP_LEFT, TopLeftGrid);
+        gameModel.SetCornerPosition(GameModel.TOP_RIGHT, TopRightGrid);
+        gameModel.SetCornerPosition(GameModel.BOTTOM_LEFT, BottomLeftGrid);
+        gameModel.SetCornerPosition(GameModel.BOTTOM_RIGHT, BottomRightGrid);
+
+    }
+
     void MoveCamera(){
-        float currentX = Camera.main.transform.position.x;
-        float currentY = Camera.main.transform.position.y;
-        float currentZ = Camera.main.transform.position.z;
+        float currentX = gameModel.GameCameraPos.x;
+        float currentY = gameModel.GameCameraPos.y;
+        float currentZ = gameModel.GameCameraPos.z;
         
 
         if(Input.GetKeyDown(KeyCode.W)){
@@ -258,13 +365,13 @@ public class GameActivity : MonoBehaviour
         }else if(Input.GetKeyUp(KeyCode.D)){
             right = false;
         }
-        Camera.main.transform.position= new Vector3(currentX, currentY, currentZ);
+        gameModel.GameCameraPos= new Vector3(currentX, currentY, currentZ);
     }
 
     void CheckIfCameraMoved(){
-       // Debug.Log(oldCameraPostion + "         " + Camera.main.transform.position);
-        if (oldCameraPostion.x != Camera.main.transform.position.x){
-            oldCameraPostion = Camera.main.transform.position;
+      //  Debug.Log(oldCameraPostion + "         " + Camera.main.transform.position);
+        if (oldCameraPostion.x !=  gameModel.GameCameraPos.x || oldCameraPostion.y !=  gameModel.GameCameraPos.y ){
+            oldCameraPostion =  gameModel.GameCameraPos;
             NotifyObservers();
         }
     } 

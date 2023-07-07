@@ -7,6 +7,10 @@ using System;
 
 public class GameModel
 {
+    public static readonly int  TOP_LEFT = 0;
+    public static readonly int  TOP_RIGHT = 1;
+    public static readonly int  BOTTOM_LEFT = 2;
+    public static readonly int  BOTTOM_RIGHT = 3;
    
     //public List<HexModel> terrainModel = new List<HexModel>();
     public HexModel[,] terrainModel; 
@@ -14,16 +18,30 @@ public class GameModel
     public readonly int COLS;
     public readonly int ROWS;
 
+    
+    public Vector3 GameCameraPos = new Vector3(0,0,-59);
+
     public Dictionary<int, TerrainChunk> terrainChunks;
+
+    private Vector3Int[] cameraCorners = new Vector3Int[4];
 
     public GameModel(GameActivity game, int cols, int rows){
         COLS = cols;
         ROWS = rows;
         terrainModel= new HexModel[rows, cols];
         terrainChunks = new Dictionary<int, TerrainChunk>();
+
     }
     public int TotalHexes(){
         return COLS*ROWS;
+    }
+
+    public Vector3Int GetCornerPosition(int p){
+        return cameraCorners[p];
+    }
+
+    public void SetCornerPosition(int p, Vector3Int pos){
+        cameraCorners[p] = pos;
     }
 
     public int GetMinCOL(){
@@ -36,7 +54,6 @@ public class GameModel
             }
         }
 
-        Debug.Log(terrainModel[0,minCol].COL + " " );
         return terrainModel[0,minCol].COL;
     }
 

@@ -116,6 +116,10 @@ public class HexModel
         RemoveRiverNeighbors(neighbors);
     }
 
+    public Vector3Int Coordinates(){
+        return new Vector3Int(COL, ROW, 0);
+    }
+
     public Vector3Int Position(){
         return new Vector3Int(actualCOL, ROW, 0);
     }
