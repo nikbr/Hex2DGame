@@ -18,6 +18,8 @@ public class GameModel
     public readonly int COLS;
     public readonly int ROWS;
 
+    public int PLAYERS_NUM;
+
     
     public Vector3 GameCameraPos = new Vector3(0,0,-59);
 
@@ -25,12 +27,13 @@ public class GameModel
 
     private Vector3Int[] cameraCorners = new Vector3Int[4];
 
-    public GameModel(GameActivity game, int cols, int rows){
+    public GameModel(GameActivity game, int cols, int rows, int players){
         COLS = cols;
         ROWS = rows;
         terrainModel= new HexModel[rows, cols];
         terrainChunks = new Dictionary<int, TerrainChunk>();
 
+        PLAYERS_NUM = players;
     }
     public int TotalHexes(){
         return COLS*ROWS;

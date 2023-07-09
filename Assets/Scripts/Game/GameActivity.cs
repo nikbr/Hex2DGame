@@ -218,7 +218,7 @@ public class GameActivity : MonoBehaviour
 
     void Start()
     {
-        gameModel = new GameModel(this, 100, 50);
+        gameModel = new GameModel(this, 100, 50, 12);
 
         SetupMinimapCamera();
 
