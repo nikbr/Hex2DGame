@@ -1,0 +1,17 @@
+"filename", "language", "C#", "comment", "blank", "total"
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Components\ClickAction.cs", "C#", 56, 3, 14, 73
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\FactionModel.cs", "C#", 61, 1, 13, 75
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\GameActivity.cs", "C#", 339, 7, 57, 403
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\GameModel.cs", "C#", 195, 7, 26, 228
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\HexModel.cs", "C#", 115, 2, 23, 140
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\MiniMap.cs", "C#", 65, 0, 14, 79
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\Observer.cs", "C#", 7, 0, 2, 9
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\RandomGen.cs", "C#", 26, 0, 5, 31
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\TerrainChunk.cs", "C#", 34, 0, 4, 38
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\TerrainMap.cs", "C#", 596, 76, 69, 741
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\TurnManager.cs", "C#", 70, 0, 10, 80
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Game\WorldCamera.cs", "C#", 13, 0, 5, 18
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Menu\Loader.cs", "C#", 26, 0, 2, 28
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Menu\LoaderCallback.cs", "C#", 13, 0, 2, 15
+"d:\Projects\HexGame\Hex Game\Assets\Scripts\Menu\MainMenu.cs", "C#", 14, 2, 2, 18
+"Total", "-", 1630, 98, 248, 1976

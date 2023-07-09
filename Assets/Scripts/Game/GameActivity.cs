@@ -216,6 +216,11 @@ public class GameActivity : MonoBehaviour
 
     private readonly float MAP_SCROLL_CONSTANT = 10;
 
+
+    //Turn manager stuff
+    public int currentTurn = 1;
+    public int objectsThatFinishedTurn=0;
+
     void Start()
     {
         gameModel = new GameModel(this, 100, 50, 12);

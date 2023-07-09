@@ -32,6 +32,7 @@ public class GameModel
         ROWS = rows;
         terrainModel= new HexModel[rows, cols];
         terrainChunks = new Dictionary<int, TerrainChunk>();
+        Debug.Log("Initializing gamemodel");
 
         PLAYERS_NUM = players;
     }
